@@ -1,17 +1,26 @@
 <template>
   <div>
-    <!-- <el-table size="mini" :data="tabelData">
-      <el-table-column prop="text" label="内容"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="120">
-        <template slot-scope="scope">
-          <el-button @click="copy(scope.row.text)" type="text" size="small">复制</el-button>
-        </template>
-      </el-table-column>
-    </el-table>-->
-    <div v-for="text in value" :key="text">
-      <div :title="text" class="chrome-plugin-string-fromat-copy-text">{{text}}</div>
-      <el-button class="chrome-plugin-string-fromat-copy-button" @click="copy(text)" type="text">复制</el-button>
-    </div>
+    <!-- 动画 -->
+    <transition-group name="string-fromat-chrome-plugin-list">
+      <div v-for="item in value" :key="item.label + ':' + item.text">
+        <el-row :gutter="10">
+          <!-- 标签 -->
+          <el-col :span="3" style="text-align: right;">
+            <el-tag :type="item.label ? null : 'warning'">{{ item.label ? item.label : "无标签" }}</el-tag>
+          </el-col>
+          <!-- 内容 -->
+          <el-col :span="18">
+            <el-tooltip effect="dark" :content="item.text" placement="top">
+              <el-input :readonly="true" width="300" v-model="item.text"></el-input>
+            </el-tooltip>
+          </el-col>
+          <!-- 复制按钮 -->
+          <el-col :span="3" style="text-align: left;">
+            <el-button @click="copy(item.text)" type="text">复制</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </transition-group>
   </div>
 </template>
 
@@ -19,19 +28,20 @@
 import copy from "copy-to-clipboard";
 export default {
   props: {
+    /**
+     * 入参
+     */
     value: {
       type: Array,
       default: ""
     }
   },
-  computed: {
-    tabelData() {
-      return this.value.map(text => ({ text }));
-    }
-  },
   methods: {
-    copy(data) {
-      copy(data);
+    /**
+     * 复制方法
+     */
+    copy(text) {
+      copy(text);
       this.$message("复制成功");
     }
   }
@@ -39,19 +49,17 @@ export default {
 </script>
 
 <style scoped>
-.chrome-plugin-string-fromat-copy-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 80%;
-  display: inline-block;
-  vertical-align: middle;
-  padding: 5px 2px;
-  padding-left: 5px;
-  font-size: 14px;
+/** 插入过程 */
+.string-fromat-chrome-plugin-list-enter-active {
+  transition: all 0.3s;
 }
-.chrome-plugin-string-fromat-copy-button {
-  vertical-align: middle;
-  padding: 5px 2px;
+/** 移除过程 **/
+.list-leave-active {
+  transition: all 0.3s;
+}
+.string-fromat-chrome-plugin-list-enter,
+.string-fromat-chrome-plugin-list-leave-to {
+  opacity: 0;
+  transform: translateY(100px);
 }
 </style>
