@@ -23,9 +23,26 @@
 import Vue from "vue";
 import CopyResultView from "@/components/CopyResultView";
 export default {
+  props: {
+    value: {
+      type: Object,
+      default: () => ({
+        paramList: [],
+        getResultFunction: `function($, print) {}`
+      })
+    }
+  },
   name: "StringFromatView",
   components: {
     CopyResultView
+  },
+  computed: {
+    paramList() {
+      return this.value.paramList;
+    },
+    getResultFunction() {
+      return eval("(() => (" + this.value.getResultFunction + "))();");
+    }
   },
   data: () => {
     return {
@@ -33,29 +50,6 @@ export default {
        * from表单数据
        */
       form: {},
-      /**
-       * 参数列表
-       */
-      paramList: [
-        {
-          label: "名称",
-          key: "name",
-          default: null
-        },
-        {
-          label: "数值",
-          key: "value",
-          default: null
-        }
-      ],
-      /**
-       * 获取结果方法
-       */
-      getResultFunction: function($, print) {
-        print("问候语", `${$.name}, 你好`);
-        print("猜测", `结果: ${$.value}`);
-        print("", "好像有问题？");
-      },
       /**
        * 运行结果
        */
@@ -74,16 +68,21 @@ export default {
      */
     onQuery() {
       // 拷贝入参
-      let { ...form } = this.form;
-      let result = [];
-      //打印参数方法
-      let print = (label, text) => {
-        result.push({ label, text });
-      };
-      //运行
-      this.getResultFunction(form, print);
-      //获取结果
-      this.resultList = result;
+      try {
+        let { ...form } = this.form;
+        let result = [];
+        //打印参数方法
+        let print = (label, text) => {
+          result.push({ label, text });
+        };
+        //运行
+        this.getResultFunction(form, print);
+        //获取结果
+        this.resultList = result;
+      } catch (e) {
+        console.error(e);
+        this.$message.error(`发生了错误，${e}`);
+      }
     },
     /**
      * 初始化form
