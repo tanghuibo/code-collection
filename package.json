@@ -11,7 +11,8 @@
     "copy-to-clipboard": "^3.2.0",
     "core-js": "^2.6.5",
     "element-ui": "^2.4.5",
-    "vue": "^2.6.10"
+    "vue": "^2.6.10",
+    "vue-codemirror": "^4.0.5"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.11.0",
@@ -20,6 +21,7 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "vue-cli-plugin-codemirror": "^0.0.6",
     "vue-cli-plugin-element": "^1.0.1",
     "vue-template-compiler": "^2.6.10"
   },
