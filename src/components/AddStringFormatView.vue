@@ -1,16 +1,44 @@
 <template>
   <div>
-    <el-form :model="from" class="demo-form-inline">
-      <el-form-item label="参数">
-        <el-input type="textarea" v-model="from.paramStr"></el-input>
-      </el-form-item>
-      <el-form-item label="方法">
-        <el-input type="textarea" v-model="from.func"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="add">添加</el-button>
-      </el-form-item>
-    </el-form>
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <div>
+          <el-tag size="medium" class="tag-class">参数</el-tag>
+          <codemirror
+            class="code-mirror"
+            v-model="from.paramStr"
+            :options="{
+            tabSize: 4,
+            mode: 'text/javascript',
+            theme: 'eclipse',
+            lineHeigh: 10,
+            lineNumbers: true,
+            lineWrapping: true,
+            line: true
+          }"
+          ></codemirror>
+        </div>
+      </el-col>
+      <el-col :span="12">
+        <div>
+          <el-tag class="tag-class">方法</el-tag>
+          <codemirror
+            class="code-mirror"
+            v-model="from.func"
+            :options="{
+            tabSize: 4,
+            mode: 'text/javascript',
+            theme: 'eclipse',
+            lineNumbers: true,
+            lineWrapping: true,
+            line: true
+          }"
+          ></codemirror>
+        </div>
+      </el-col>
+    </el-row>
+
+    <el-button style="width: 100%; margin-top: 10px;" type="primary" @click="add">添加</el-button>
   </div>
 </template>
 
@@ -19,21 +47,22 @@ export default {
   data: () => ({
     from: {
       paramStr: `[
-        {
-          label: "名称",
-          key: "name",
-          default: null
-        },
-        {
-          label: "数值",
-          key: "value",
-          default: null
-        }
-      ]`,
+  {
+    label: "名称",
+    key: "name",
+    default: null
+  },
+  {
+    label: "数值",
+    key: "value",
+    default: null
+  }
+]`,
       func: `function($, pt) { 
-          pt("问候语", \`\${$.name}, 你好\`);
-          pt("猜测", \`结果: \${$.value}\`);
-          pt("", "好像有问题？");}`
+  pt("问候语", \`\${$.name}, 你好\`);
+  pt("猜测", \`结果: \${$.value}\`);
+  pt("", "好像有问题？");
+}`
     }
   }),
   methods: {
@@ -42,13 +71,26 @@ export default {
         let result = {};
         result.paramList = eval(`(() => (${this.from.paramStr}))()`);
         result.getResultFunction = this.from.func;
-        console.log(JSON.stringify(result));
         this.$emit("add", result);
       } catch (e) {
-        console.error(e);
         this.$message.error(`发生了错误，${e}`);
       }
     }
   }
 };
 </script>
+
+<style scoped>
+.code-mirror {
+  font-size: 18px;
+  line-height: 20px;
+  border: 1px solid #555;
+}
+.tag-class {
+  line-height: 40px;
+  height: 40px;
+  font-size: 30px;
+  width: 100%;
+  text-align: center;
+}
+</style>
