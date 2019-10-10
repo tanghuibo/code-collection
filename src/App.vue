@@ -1,20 +1,20 @@
 <template>
   <div id="app">
     <div>
-      <AddStringFormatView v-if="param == null" @add="add"/>
+      <EditView v-if="param == null" @add="add" />
       <StringFromatView v-if="param" :value="param" />
     </div>
   </div>
 </template>
 
 <script>
+import EditView from "@/components/EditView";
 import StringFromatView from "@/components/StringFromatView";
-import AddStringFormatView from '@/components/AddStringFormatView';
 export default {
   name: "app",
   components: {
     StringFromatView,
-    AddStringFormatView
+    EditView
   },
   methods: {
     add(data) {
