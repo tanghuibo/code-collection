@@ -1,7 +1,13 @@
 <template>
-  <div>
-    <EditTreeView @clickNode="addToEdit" @nodeRemove="nodeRemove" />
-    <EditFunctionView v-if="editFunction" :editData="editData.data" @commit="commitData" />
+  <div style="overflow: hidden;">
+    <el-container style="height: 98vh; border: 1px solid #eee">
+      <el-aside width="350px" style="background-color: rgb(238, 241, 246)">
+        <EditTreeView @clickNode="addToEdit" @nodeRemove="nodeRemove" />
+      </el-aside>
+      <el-main>
+        <EditFunctionView ref="editFunctionView" @commit="commitData" />
+      </el-main>
+    </el-container>
   </div>
 </template>
 
@@ -25,20 +31,21 @@ export default {
       }
     },
     addToEdit(editData, editFunction) {
-      console.log(editData);
       this.editData = editData;
-      this.editFunction = null;
-      setTimeout(() => {
-        this.editFunction = editFunction;
-      }, 0);
+      this.editFunction = editFunction;
+      console.log(this.$refs, this);
+      this.$refs.editFunctionView.setEditData(editData.data, editData.label);
     },
     nodeRemove(removeData) {
-      if (this.editData == null) {
+      if (this.editFunction == null) {
         return;
       }
       if (removeData.id === this.editData.id) {
         this.editData = null;
         this.editFunction = null;
+        console.log("delete");
+        
+        this.$refs.editFunctionView.close();
       }
     }
   }

@@ -1,20 +1,21 @@
 <template>
   <div>
-    <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
+    <div style="padding: 5px;">
+      <el-input placeholder="输入关键字进行过滤" size="mini" v-model="filterText" />
+    </div>
     <el-tree
-      style="width: 30%;"
+      style="margin: 5px;"
       :data="data"
       ref="tree"
       node-key="id"
       default-expand-all
       draggable
-      @current-change="treeChange"
       :filter-node-method="filterNode"
       :allow-drop="allowDrop"
       :expand-on-click-node="false"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
+        <span @click="() => treeChange(data, node)" class="tree-label" :title="node.label">{{ node.label }}</span>
         <span>
           <el-button
             type="text"
@@ -70,15 +71,15 @@ export default {
   }),
   methods: {
     updataData(node, data) {
-      this.$set(node, 'data', data);
-       this.$message({
-            type: "success",
-            message: "编辑成功"
-          });
+      this.$set(node, "data", data);
+      this.$message({
+        type: "success",
+        message: "编辑成功"
+      });
     },
     treeChange(data, node) {
       if (node.level === 3) {
-        this.$emit('clickNode', data, (param => this.updataData(data, param)));
+        this.$emit("clickNode", data, param => this.updataData(data, param));
       }
     },
     allowDrop(node1, node2, type) {
@@ -158,6 +159,7 @@ export default {
           const children = parent.data.children;
           const index = children.findIndex(d => d.id === data.id);
           children.splice(index, 1);
+          this.$emit("nodeRemove", data);
           this.$message({
             type: "success",
             message: "删除成功!"
@@ -177,5 +179,11 @@ export default {
   justify-content: space-between;
   font-size: 14px;
   padding-right: 8px;
+}
+.tree-label {
+  width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 27px;
 }
 </style>
