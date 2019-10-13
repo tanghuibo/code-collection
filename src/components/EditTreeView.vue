@@ -49,19 +49,19 @@ export default {
     data: [
       {
         id: 1,
-        label: "一级 1",
+        label: "我的目录",
         children: [
           {
-            id: 4,
-            label: "二级 1-1",
+            id: 2,
+            label: "常用工具",
             children: [
               {
-                id: 9,
-                label: "三级 1-1-1"
+                id: 3,
+                label: "年级查询"
               },
               {
-                id: 10,
-                label: "三级 1-1-2"
+                id: 4,
+                label: "成绩查询"
               }
             ]
           }
