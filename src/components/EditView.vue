@@ -2,10 +2,11 @@
   <div style="overflow: hidden;">
     <el-container style="height: 98vh; border: 1px solid #eee">
       <el-aside width="350px" style="background-color: rgb(238, 241, 246)">
-        <EditTreeView @clickNode="addToEdit" @nodeRemove="nodeRemove" />
+        <EditTreeView @changeMode="changeMode" @clickNode="changeNoode" @removeNode="removeNode" />
       </el-aside>
       <el-main>
-        <EditFunctionView ref="editFunctionView" @commit="commitData" />
+        <EditFunctionView v-if="editMode" ref="editFunctionView" @commit="commitData" />
+        <StringFromatView  v-if="!editMode" ref="runFunctionView"/>
       </el-main>
     </el-container>
   </div>
@@ -14,34 +15,44 @@
 <script>
 import EditFunctionView from "@/components/EditFunctionView";
 import EditTreeView from "@/components/EditTreeView";
+import StringFromatView from '@/components/StringFromatView'
 export default {
   data: () => ({
-    editData: null,
-    editFunction: null
+    activationNode: null,
+    editFunction: null,
+    editMode: false
   }),
   components: {
     EditTreeView,
-    EditFunctionView
+    EditFunctionView,
+    StringFromatView
   },
   methods: {
+    changeMode(editMode) {
+      this.editMode = editMode;
+    },
     commitData(data) {
-      console.log("init");
       if (this.editFunction) {
         this.editFunction(data);
       }
     },
-    addToEdit(editData, editFunction) {
-      this.editData = editData;
+    changeNoode(activationNode, editFunction) {
+      this.activationNode = activationNode;
       this.editFunction = editFunction;
-      console.log(this.$refs, this);
-      this.$refs.editFunctionView.setEditData(editData.data, editData.label);
+      if(this.editMode) {
+        this.$refs.editFunctionView.setEditData(activationNode.data, activationNode.label);
+      } else {
+        console.log(activationNode);
+        this.$refs.runFunctionView.setData(activationNode.data);
+      }
+      
     },
-    nodeRemove(removeData) {
+    removeNode(removeData) {
       if (this.editFunction == null) {
         return;
       }
-      if (removeData.id === this.editData.id) {
-        this.editData = null;
+      if (removeData.id === this.activationNode.id) {
+        this.activationNode = null;
         this.editFunction = null;
         console.log("delete");
         

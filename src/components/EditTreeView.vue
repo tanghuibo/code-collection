@@ -1,5 +1,25 @@
 <template>
   <div>
+    <div>
+      <el-button-group style="width: calc(100% - 6px); margin: 3px; margin-bottom: 0;">
+        <el-button
+          v-if="editMode"
+          @click="() => this.enableEnditModel(false)"
+          icon="el-icon-caret-right"
+          style="width: 33%;"
+          size="mini"
+        >运行</el-button>
+        <el-button
+          v-if="!editMode"
+          @click="() => this.enableEnditModel(true)"
+          icon="el-icon-edit"
+          style="width: 33%;"
+          size="mini"
+        >编辑</el-button>
+        <el-button icon="el-icon-upload2" style="width: 34%;" size="mini">导入</el-button>
+        <el-button icon="el-icon-download" style="width: 33%;" size="mini">导出</el-button>
+      </el-button-group>
+    </div>
     <div style="padding: 5px;">
       <el-input placeholder="输入关键字进行过滤" size="mini" v-model="filterText" />
     </div>
@@ -15,8 +35,12 @@
       :expand-on-click-node="false"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span @click="() => treeChange(data, node)" class="tree-label" :title="node.label">{{ node.label }}</span>
-        <span>
+        <span
+          @click="() => treeChange(data, node)"
+          class="tree-label"
+          :title="node.label"
+        >{{ node.label }}</span>
+        <span v-if="editMode">
           <el-button
             type="text"
             size="mini"
@@ -45,6 +69,7 @@ export default {
     }
   },
   data: () => ({
+    editMode: false,
     filterText: "",
     data: [
       {
@@ -70,6 +95,10 @@ export default {
     ]
   }),
   methods: {
+    enableEnditModel(editMode) {
+      this.editMode = editMode;
+      this.$emit("changeMode", editMode);
+    },
     updataData(node, data) {
       this.$set(node, "data", data);
       this.$message({

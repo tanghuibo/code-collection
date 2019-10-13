@@ -23,15 +23,6 @@
 import Vue from "vue";
 import CopyResultView from "@/components/CopyResultView";
 export default {
-  props: {
-    value: {
-      type: Object,
-      default: () => ({
-        paramList: [],
-        getResultFunction: `function($, print) {}`
-      })
-    }
-  },
   name: "StringFromatView",
   components: {
     CopyResultView
@@ -46,6 +37,10 @@ export default {
   },
   data: () => {
     return {
+      value: {
+        getResultFunction: "",
+        paramList: []
+      },
       /**
        * from表单数据
        */
@@ -58,11 +53,22 @@ export default {
   },
   mounted() {
     //初始化form
-    this.paramList.forEach(param => {
-      Vue.set(this.form, param.key, param.default);
-    });
+    this.init();
   },
   methods: {
+    setData(data) {
+      if (data != null) {
+        this.value.paramList = data.params;
+        this.value.getResultFunction = data.printFunction;
+      }
+    },
+
+    init() {
+      this.form = {};
+      this.paramList.forEach(param => {
+        Vue.set(this.form, param.key, param.default);
+      });
+    },
     /**
      * 触发查询方法
      */
