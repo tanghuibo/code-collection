@@ -1,10 +1,7 @@
 <template>
-  <div v-if="show">
-    <el-container style="height: 90vh;  overflow: hidden;">
+  <div>
+    <el-container>
       <el-main style="overflow: hidden; padding: 0;">
-        <el-tag
-          style="overflow: hidden; text-overflow: ellipsis;line-height: 40px; height: 40px; font-size: 30px; width: 100%; text-align: left;"
-        >{{this.functionName}}</el-tag>
         <el-row :gutter="20">
           <el-col :span="12">
             <div>
@@ -14,7 +11,7 @@
               >参数</el-tag>
               <codemirror
                 class="code-mirror"
-                v-model="from.params"
+                v-model="form.params"
                 :options="{
             tabSize: 4,
             mode: 'text/javascript',
@@ -36,7 +33,7 @@
               >方法</el-tag>
               <codemirror
                 class="code-mirror"
-                v-model="from.printFunction"
+                v-model="form.printFunction"
                 :options="{
             tabSize: 4,
             mode: 'text/javascript',
@@ -59,28 +56,31 @@
 
 <script>
 export default {
+  props: {
+    value: {
+      type: Object,
+      default: () => ({
+        params: [],
+        printFunction: `function($, pt) { 
+  pt("hello", \`world\`);
+}`
+      })
+    }
+  },
   data: () => ({
-    show: false,
-    functionName: "",
-    from: {
+    form: {
       params: "",
       printFunction: ""
     }
   }),
+  mounted() {
+    this.setEditData(this.value);
+  },
   methods: {
-    setEditData(editData, functionName) {
-      if (editData == null || Object.keys(editData) == 0) {
-        editData = {
-          params: [],
-          printFunction: `function($, pt) { 
-  pt("hello", \`world\`);
-}`
-        };
-      }
-      this.show = true;
-      this.from.params = JSON.stringify(editData.params, null, 2);
-      this.from.printFunction = editData.printFunction;
-      this.functionName = functionName;
+    setEditData(editData) {
+      console.log("editData", editData);
+      this.form.params = JSON.stringify(editData.params, null, 2);
+      this.form.printFunction = editData.printFunction;
     },
     close() {
       this.show = false;
@@ -88,8 +88,8 @@ export default {
     comit() {
       try {
         let result = {};
-        result.params = eval(`(() => (${this.from.params}))()`);
-        this.from.params = JSON.stringify(result.params, 0, 2);
+        result.params = eval(`(() => (${this.form.params}))()`);
+        this.form.params = JSON.stringify(result.params, 0, 2);
         if (!(result.params instanceof Array)) {
           this.$message.error("必须输入数组");
           return;
@@ -104,7 +104,7 @@ export default {
             return;
           }
         }
-        result.printFunction = this.from.printFunction;
+        result.printFunction = this.form.printFunction;
         console.log(result);
         this.$emit("commit", result);
       } catch (e) {
@@ -115,21 +115,10 @@ export default {
 };
 </script>
 
-<style>
+<style lang="css" scoped>
 .code-mirror {
   font-size: 18px;
   line-height: 20px;
   border: 1px solid #555;
-  height: calc(90vh - 160px);
-}
-.code-mirror .CodeMirror.cm-s-eclipse.CodeMirror-wrap {
-  height: calc(90vh - 160px);
-}
-.tag-class {
-  line-height: 40px;
-  height: 40px;
-  font-size: 30px;
-  width: 100%;
-  text-align: center;
 }
 </style>
