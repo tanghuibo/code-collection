@@ -3,16 +3,33 @@
     <div>
       <!-- <EditView v-if="param == null" @add="add" />
       <StringFromatView v-if="param" :value="param" />-->
-
-      <el-table stripe :data="functionInfoList">
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <EditFunctionView :value="props.row.functionInfo" />
-          </template>
-        </el-table-column>
-        <el-table-column label="方法名称" prop="name"></el-table-column>
-        <el-table-column label="描述" prop="desc"></el-table-column>
-      </el-table>
+      <el-tabs :value="'use'" type="border-card">
+        <el-tab-pane class="tab" label="使用" name="use">
+          <el-table border stripe :data="functionInfoList">
+            <el-table-column type="expand">
+              <template slot-scope="props">
+                <StringFromatView :value="props.row.functionInfo" />
+              </template>
+            </el-table-column>
+            <el-table-column label="方法名称" prop="name"></el-table-column>
+            <el-table-column label="描述" prop="desc"></el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane class="tab" label="编辑" name="edit">
+          <el-table border stripe :data="functionInfoList">
+            <el-table-column type="expand">
+              <template slot-scope="props">
+                <EditFunctionView
+                  @commit="data => editCommit(props.$index, data)"
+                  :value="props.row.functionInfo"
+                />
+              </template>
+            </el-table-column>
+            <el-table-column label="方法名称" prop="name"></el-table-column>
+            <el-table-column label="描述" prop="desc"></el-table-column>
+          </el-table>
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
@@ -29,13 +46,21 @@ export default {
   methods: {
     add(data) {
       this.param = data;
+    },
+    editCommit(index, data) {
+      this.functionInfoList[index].functionInfo = data;
+      this.$message.success("保存成功");
     }
   },
   data: () => ({
     functionInfoList: [
       {
         name: "第一次新增",
-        desc: "我是空的"
+        desc: "我是空的",
+        functionInfo: {
+          params: [],
+          printFunction: null
+        }
       },
       {
         name: "已保存过方法",
@@ -53,4 +78,8 @@ export default {
 </script>
 
 <style>
+.tab {
+  height: calc(100vh - 100px);
+  overflow: scroll;
+}
 </style>

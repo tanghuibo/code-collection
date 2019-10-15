@@ -78,9 +78,9 @@ export default {
   },
   methods: {
     setEditData(editData) {
-      console.log("editData", editData);
       this.form.params = JSON.stringify(editData.params, null, 2);
-      this.form.printFunction = editData.printFunction;
+      this.form.printFunction =
+        editData.printFunction == null ? "" : editData.printFunction;
     },
     close() {
       this.show = false;
@@ -88,6 +88,9 @@ export default {
     comit() {
       try {
         let result = {};
+        if (this.form.params == null || this.form.params.trim() == "") {
+          this.form.params = "[]";
+        }
         result.params = eval(`(() => (${this.form.params}))()`);
         this.form.params = JSON.stringify(result.params, 0, 2);
         if (!(result.params instanceof Array)) {
@@ -105,7 +108,6 @@ export default {
           }
         }
         result.printFunction = this.form.printFunction;
-        console.log(result);
         this.$emit("commit", result);
       } catch (e) {
         this.$message.error(`发生了错误，${e}`);

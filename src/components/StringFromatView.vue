@@ -1,17 +1,26 @@
 <template>
   <div>
     <!-- form，水平居中 -->
-    <el-form style="text-align: center;" :inline="true" ref="form" :model="form" label-width="80px">
-      <!-- 输入框 -->
-      <el-form-item v-for="param in paramList" :key="param.key" :label="param.label">
-        <el-input v-model="form[param.key]"></el-input>
-      </el-form-item>
-      <!-- 查询&重置按钮 -->
-      <el-form-item>
-        <el-button type="primary" @click="onQuery">查询</el-button>
-        <el-button @click="onReset">重置</el-button>
-      </el-form-item>
-    </el-form>
+    <div v-if="params != null && params.length > 0">
+      <el-form
+        style="text-align: center;"
+        :inline="true"
+        ref="form"
+        :model="form"
+        label-width="80px"
+      >
+        <!-- 输入框 -->
+
+        <el-form-item v-for="param in params" :key="param.key" :label="param.label">
+          <el-input v-model="form[param.key]"></el-input>
+        </el-form-item>
+        <!-- 查询&重置按钮 -->
+        <el-form-item>
+          <el-button type="primary" @click="onQuery">查询</el-button>
+          <el-button @click="init">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
     <div>
       <!-- 结果面板 -->
       <CopyResultView :value="resultList" />
@@ -24,23 +33,17 @@ import Vue from "vue";
 import CopyResultView from "@/components/CopyResultView";
 export default {
   name: "StringFromatView",
+  props: {
+    value: Object,
+    default: null
+  },
   components: {
     CopyResultView
   },
-  computed: {
-    paramList() {
-      return this.value.paramList;
-    },
-    getResultFunction() {
-      return eval("(() => (" + this.value.getResultFunction + "))();");
-    }
-  },
   data: () => {
     return {
-      value: {
-        getResultFunction: "",
-        paramList: []
-      },
+      printFunction: "",
+      params: [],
       /**
        * from表单数据
        */
@@ -52,22 +55,39 @@ export default {
     };
   },
   mounted() {
+    console.log("data", this.value);
     //初始化form
-    this.init();
+    this.setData(this.value);
   },
   methods: {
     setData(data) {
       if (data != null) {
-        this.value.paramList = data.params;
-        this.value.getResultFunction = data.printFunction;
+        this.params = data.params;
+        if (this.params == null || this.params.length == 0) {
+          try {
+            let print = (label, text) => {
+              result.push({ label, text });
+            };
+            //运行
+            eval("(() => (" + data.printFunction + "))();")({}, print);
+            //获取结果
+            this.resultList = result;
+          } catch (error) {
+            this.resultList = [{ label: "", text: data.printFunction }];
+          }
+          return;
+        }
+        this.printFunction = eval("(() => (" + data.printFunction + "))();");
+        this.init();
       }
     },
 
     init() {
       this.form = {};
-      this.paramList.forEach(param => {
+      this.params.forEach(param => {
         Vue.set(this.form, param.key, param.default);
       });
+      this.resultList = [];
     },
     /**
      * 触发查询方法
@@ -82,21 +102,13 @@ export default {
           result.push({ label, text });
         };
         //运行
-        this.getResultFunction(form, print);
+        this.printFunction(form, print);
         //获取结果
         this.resultList = result;
       } catch (e) {
         console.error(e);
         this.$message.error(`发生了错误，${e}`);
       }
-    },
-    /**
-     * 初始化form
-     */
-    onReset() {
-      this.paramList.forEach(param => {
-        this.form[param.key] = param.default;
-      });
     }
   }
 };
