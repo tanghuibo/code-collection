@@ -3,31 +3,12 @@
     <div>
       <!-- <EditView v-if="param == null" @add="add" />
       <StringFromatView v-if="param" :value="param" />-->
-      <el-tabs :value="'use'" type="border-card">
+      <el-tabs v-model="activitiTag" type="border-card">
         <el-tab-pane class="tab" label="使用" name="use">
-          <el-table border stripe :data="functionInfoList">
-            <el-table-column type="expand">
-              <template slot-scope="props">
-                <StringFromatView :value="props.row.functionInfo" />
-              </template>
-            </el-table-column>
-            <el-table-column label="方法名称" prop="name"></el-table-column>
-            <el-table-column label="描述" prop="desc"></el-table-column>
-          </el-table>
+          <use-pane-view v-if="activitiTag == 'use'" v-model="functionInfoList" />
         </el-tab-pane>
         <el-tab-pane class="tab" label="编辑" name="edit">
-          <el-table border stripe :data="functionInfoList">
-            <el-table-column type="expand">
-              <template slot-scope="props">
-                <EditFunctionView
-                  @commit="data => editCommit(props.$index, data)"
-                  :value="props.row.functionInfo"
-                />
-              </template>
-            </el-table-column>
-            <el-table-column label="方法名称" prop="name"></el-table-column>
-            <el-table-column label="描述" prop="desc"></el-table-column>
-          </el-table>
+           <edit-pane-view v-if="activitiTag == 'edit'" v-model="functionInfoList" />
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -35,24 +16,20 @@
 </template>
 
 <script>
-import StringFromatView from "@/components/StringFromatView";
-import EditFunctionView from "@/components/EditFunctionView";
+import UsePaneView from "@/pages/UsePaneView";
+import EditPaneView from "@/pages/EditPaneView";
 export default {
   name: "app",
   components: {
-    StringFromatView,
-    EditFunctionView
+    EditPaneView,
+    UsePaneView
   },
   methods: {
-    add(data) {
-      this.param = data;
-    },
-    editCommit(index, data) {
-      this.functionInfoList[index].functionInfo = data;
-      this.$message.success("保存成功");
-    }
+
   },
   data: () => ({
+    keyWords: "",
+    activitiTag: "use",
     functionInfoList: [
       {
         name: "第一次新增",
@@ -77,7 +54,10 @@ export default {
 };
 </script>
 
-<style>
+<style lang="css" scoped>
+.head {
+  margin-bottom: 10px;
+}
 .tab {
   height: calc(100vh - 100px);
   overflow: scroll;

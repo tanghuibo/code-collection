@@ -14,7 +14,6 @@
 
 <script>
 import EditFunctionView from "@/components/EditFunctionView";
-import EditTreeView from "@/components/EditTreeView";
 import StringFromatView from '@/components/StringFromatView'
 export default {
   data: () => ({
@@ -23,7 +22,6 @@ export default {
     editMode: false
   }),
   components: {
-    EditTreeView,
     EditFunctionView,
     StringFromatView
   },
