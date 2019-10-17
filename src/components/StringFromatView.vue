@@ -64,6 +64,7 @@ export default {
       if (data != null) {
         this.params = data.params;
         if (this.params == null || this.params.length == 0) {
+          let result = [];
           try {
             let print = (label, text) => {
               result.push({ label, text });
@@ -73,6 +74,7 @@ export default {
             //获取结果
             this.resultList = result;
           } catch (error) {
+            console.error(error);
             this.resultList = [{ label: "", text: data.printFunction }];
           }
           return;

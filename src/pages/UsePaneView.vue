@@ -21,12 +21,6 @@
 import StringFromatView from "@/components/StringFromatView";
 export default {
   components: { StringFromatView },
-  props: {
-    value: {
-      type: Array,
-      default: () => []
-    }
-  },
   computed: {
     showList() {
       let keyWords = this.keyWords;
@@ -46,7 +40,16 @@ export default {
     keyWords: ""
   }),
   mounted() {
-    this.functionInfoList = this.value;
+    let functionInfoList = localStorage.getItem("functionList");
+    console.log(functionInfoList);
+    if (
+      functionInfoList != null &&
+      functionInfoList != "" &&
+      functionInfoList != "undefined" &&
+      functionInfoList != "null"
+    ) {
+      this.functionInfoList = JSON.parse(functionInfoList);
+    }
   }
 };
 </script>
