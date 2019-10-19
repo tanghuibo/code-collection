@@ -5,10 +5,10 @@
       <StringFromatView v-if="param" :value="param" />-->
       <el-tabs v-model="activitiTag" type="border-card">
         <el-tab-pane class="tab" label="使用" name="use">
-          <use-pane-view v-if="activitiTag == 'use'" v-model="functionInfoList" />
+          <use-pane-view v-if="activitiTag == 'use'" />
         </el-tab-pane>
         <el-tab-pane class="tab" label="编辑" name="edit">
-           <edit-pane-view v-if="activitiTag == 'edit'" v-model="functionInfoList" />
+           <edit-pane-view v-if="activitiTag == 'edit'" />
         </el-tab-pane>
       </el-tabs>
     </div>

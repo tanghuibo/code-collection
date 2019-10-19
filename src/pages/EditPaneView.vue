@@ -17,6 +17,12 @@
       </el-table-column>
       <el-table-column label="方法名称" prop="name"></el-table-column>
       <el-table-column label="描述" prop="desc"></el-table-column>
+      <el-table-column label="操作" prop="desc">
+        <template slot-scope="scope">
+          <el-button icon="el-icon-edit" type="primary">修改</el-button>
+          <el-button icon="el-icon-delete" type="danger">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <el-dialog
@@ -126,7 +132,7 @@ export default {
       this.showAddDiagLogFlag = true;
     },
     editCommit(index, data) {
-      this.$set(this.functionInfoList[index], 'functionInfo', data);
+      this.$set(this.functionInfoList[index], "functionInfo", data);
       this.$message.success("保存成功");
     }
   }
