@@ -4,13 +4,13 @@
       <el-input style="width: 300px;" placeholder="请输入内容" v-model="keyWords">
         <template slot="prepend">查询</template>
       </el-input>
-      <el-button type="primary" style="margin-left: 20px;" @click="showAddModel">新增</el-button>
+      <el-button type="primary" style="margin-left: 20px;" @click="addData" icon="el-icon-plus">新增</el-button>
     </div>
     <el-table border stripe :data="showList">
       <el-table-column type="expand">
         <template slot-scope="props">
           <EditFunctionView
-            @commit="data => editCommit(props.$index, data)"
+            @commit="data => editParamCommit(props.$index, data)"
             :value="props.row.functionInfo"
           />
         </template>
@@ -19,7 +19,11 @@
       <el-table-column label="描述" prop="desc"></el-table-column>
       <el-table-column width="260" label="操作" prop="desc">
         <template slot-scope="scope">
-          <el-button icon="el-icon-edit" type="success">修改</el-button>
+          <el-button
+            icon="el-icon-edit"
+            type="success"
+            @click="() => editData(scope.$index, scope.row)"
+          >修改</el-button>
           <el-button
             icon="el-icon-delete"
             type="danger"
@@ -28,32 +32,15 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <el-dialog
-      :close-on-click-modal="false"
-      title="新增"
-      :visible.sync="showAddDiagLogFlag"
-      width="30%"
-    >
-      <el-form :model="addForm" :rules="addFormRules" label-position="right" label-width="80px">
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="addForm.name" />
-        </el-form-item>
-        <el-form-item label="描述" prop="desc">
-          <el-input v-model="addForm.desc" type="textarea" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="addFunctionInfo">立即创建</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    <edit-dialog ref="editDialog" @addSubmit="addSubmit" @editSubmit="editSubmit" />
   </div>
 </template>
 
 <script>
+import EditDialog from "@/components/EditDialog";
 import EditFunctionView from "@/components/EditFunctionView";
 export default {
-  components: { EditFunctionView },
+  components: { EditFunctionView, EditDialog },
   computed: {
     showList() {
       let keyWords = this.keyWords;
@@ -68,41 +55,10 @@ export default {
       );
     }
   },
-  watch: {
-    functionInfoList: {
-      handler: function(val, oldval) {
-        this.saveData();
-      },
-      deep: true //对象内部的属性监听，也叫深度监听
-    }
-  },
   data: function() {
     return {
-      saveFlag: false,
       functionInfoList: [],
-      keyWords: "",
-      showAddDiagLogFlag: false,
-      addForm: {
-        name: "",
-        desc: ""
-      },
-      addFormRules: {
-        name: [
-          { required: true, message: "请输入名称", trigger: "change" },
-          {
-            validator: (rule, value, callback) => {
-              if (
-                this.functionInfoList.map(item => item.name).includes(value)
-              ) {
-                callback("名称已存在");
-              } else {
-                callback();
-              }
-            },
-            trigger: "change"
-          }
-        ]
-      }
+      keyWords: ""
     };
   },
   mounted() {
@@ -115,45 +71,59 @@ export default {
     ) {
       this.functionInfoList = JSON.parse(functionInfoList);
     }
-    this.saveFlag = true;
   },
   methods: {
-    deleteData(index, data) {
-      this.$confirm(`确认要删除方法"${data.name}"吗`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.functionInfoList.splice(index, 1);
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
-        })
-        .catch(() => {
-         
-        });
+    showMessageAndSaveData(message) {
+      this.$message({
+        type: "success",
+        message
+      });
+      this.saveData();
     },
     saveData() {
-      if (this.saveFlag) {
-        localStorage.setItem(
-          "functionList",
-          JSON.stringify(this.functionInfoList)
-        );
-      }
+      localStorage.setItem(
+        "functionList",
+        JSON.stringify(this.functionInfoList)
+      );
     },
-    addFunctionInfo() {
-      this.functionInfoList.push(this.addForm);
-      this.showAddDiagLogFlag = false;
+    deleteData(index, data) {
+      this.$confirm(
+        `确认要删除方法"${data == null ? "" : data.name}"吗`,
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
+        .then(() => {
+          this.functionInfoList.splice(index, 1);
+          this.showMessageAndSaveData("删除成功");
+        })
+        .catch(() => {});
     },
-    showAddModel() {
-      this.addForm = { name: "", desc: "" };
-      this.showAddDiagLogFlag = true;
+    editSubmit(data, index) {
+      this.functionInfoList[index] = data;
+      this.showMessageAndSaveData("修改成功");
     },
-    editCommit(index, data) {
+    addSubmit(data) {
+      this.functionInfoList.push(data);
+      this.showMessageAndSaveData("新增成功");
+    },
+    editParamCommit(index, data) {
       this.$set(this.functionInfoList[index], "functionInfo", data);
-      this.$message.success("保存成功");
+      this.showMessageAndSaveData("修改成功");
+    },
+
+    addData() {
+      this.$refs.editDialog.add(this.functionInfoList.map(item => item.name));
+    },
+    editData(index, data) {
+      this.$refs.editDialog.edit(
+        this.functionInfoList.map(item => item.name),
+        data,
+        index
+      );
     }
   }
 };
