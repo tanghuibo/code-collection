@@ -17,10 +17,14 @@
       </el-table-column>
       <el-table-column label="方法名称" prop="name"></el-table-column>
       <el-table-column label="描述" prop="desc"></el-table-column>
-      <el-table-column label="操作" prop="desc">
+      <el-table-column width="260" label="操作" prop="desc">
         <template slot-scope="scope">
-          <el-button icon="el-icon-edit" type="primary">修改</el-button>
-          <el-button icon="el-icon-delete" type="danger">删除</el-button>
+          <el-button icon="el-icon-edit" type="success">修改</el-button>
+          <el-button
+            icon="el-icon-delete"
+            type="danger"
+            @click="() => deleteData(scope.$index, scope.row)"
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -103,7 +107,6 @@ export default {
   },
   mounted() {
     let functionInfoList = localStorage.getItem("functionList");
-    console.log(functionInfoList);
     if (
       functionInfoList != null &&
       functionInfoList != "" &&
@@ -115,6 +118,23 @@ export default {
     this.saveFlag = true;
   },
   methods: {
+    deleteData(index, data) {
+      this.$confirm(`确认要删除方法"${data.name}"吗`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.functionInfoList.splice(index, 1);
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+        })
+        .catch(() => {
+         
+        });
+    },
     saveData() {
       if (this.saveFlag) {
         localStorage.setItem(
