@@ -10,7 +10,7 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <EditFunctionView
-            @commit="data => editParamCommit(props.$index, data)"
+            @commit="functionInfo => editSubmit({...props.row, functionInfo}, props.$index)"
             :value="props.row.functionInfo"
           />
         </template>
@@ -103,16 +103,15 @@ export default {
         .catch(() => {});
     },
     editSubmit(data, index) {
-      this.functionInfoList[index] = data;
+      console.log("data", data);
+      for (let key in data) {
+        this.$set(this.functionInfoList[index], key, data[key]);
+      }
       this.showMessageAndSaveData("修改成功");
     },
     addSubmit(data) {
       this.functionInfoList.push(data);
       this.showMessageAndSaveData("新增成功");
-    },
-    editParamCommit(index, data) {
-      this.$set(this.functionInfoList[index], "functionInfo", data);
-      this.showMessageAndSaveData("修改成功");
     },
 
     addData() {

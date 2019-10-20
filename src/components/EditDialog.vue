@@ -41,8 +41,7 @@ export default {
           { required: true, message: "请输入名称", trigger: "change" },
           {
             validator: (rule, value, callback) => {
-              let name = value.name;
-              if (this.exceptionName.includes(name)) {
+              if (this.exceptionName.includes(value)) {
                 callback();
               } else if (this.nameList.includes(value)) {
                 callback("名称已存在");

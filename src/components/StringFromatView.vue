@@ -55,7 +55,6 @@ export default {
     };
   },
   mounted() {
-    console.log("data", this.value);
     //初始化form
     this.setData(this.value);
   },
