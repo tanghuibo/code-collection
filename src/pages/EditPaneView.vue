@@ -5,6 +5,18 @@
         <template slot="prepend">查询</template>
       </el-input>
       <el-button type="primary" style="margin-left: 20px;" @click="addData" icon="el-icon-plus">新增</el-button>
+      <el-button
+        type="primary"
+        style="margin-left: 20px;"
+        @click="showUpload"
+        icon="el-icon-upload2"
+      >导入</el-button>
+      <el-button
+        type="primary"
+        style="margin-left: 20px;"
+        @click="showDownload"
+        icon="el-icon-download"
+      >导出</el-button>
     </div>
     <el-table border stripe :data="showList">
       <el-table-column type="expand">
@@ -33,14 +45,18 @@
       </el-table-column>
     </el-table>
     <edit-dialog ref="editDialog" @addSubmit="addSubmit" @editSubmit="editSubmit" />
+    <download-dialog ref="downloadDialog" />
+    <upload-dialog ref="uploadDialog" @upload="upload" />
   </div>
 </template>
 
 <script>
 import EditDialog from "@/components/EditDialog";
 import EditFunctionView from "@/components/EditFunctionView";
+import DownloadDialog from "@/components/DownloadDialog";
+import UploadDialog from "@/components/UploadDialog";
 export default {
-  components: { EditFunctionView, EditDialog },
+  components: { EditFunctionView, EditDialog, DownloadDialog, UploadDialog },
   computed: {
     showList() {
       let keyWords = this.keyWords;
@@ -73,6 +89,28 @@ export default {
     }
   },
   methods: {
+    showUpload() {
+      this.$refs.uploadDialog.show();
+    },
+    upload(code, close) {
+      try {
+        let list = JSON.parse(code);
+        if (!(list instanceof Array)) {
+          this.$$message.error("导入格式错误");
+        }
+        this.functionInfoList = list;
+        this.saveData();
+        this.$message.success("导入成功");
+        close();
+      } catch (e) {
+        this.$message.error("导入格式错误");
+      }
+    },
+    showDownload() {
+      this.$refs.downloadDialog.show(
+        JSON.stringify(this.functionInfoList, 0, 2)
+      );
+    },
     showMessageAndSaveData(message) {
       this.$message({
         type: "success",
