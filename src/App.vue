@@ -10,7 +10,7 @@
         </el-tab-pane>
         <el-tab-pane class="tab" label="编辑" name="edit">
           <span slot="label">
-            <i class="el-icon-edit"></i> 使用
+            <i class="el-icon-edit"></i> 编辑
           </span>
           <edit-pane-view v-if="activitiTag == 'edit'" />
         </el-tab-pane>

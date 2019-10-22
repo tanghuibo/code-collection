@@ -47,6 +47,7 @@
     <edit-dialog ref="editDialog" @addSubmit="addSubmit" @editSubmit="editSubmit" />
     <download-dialog ref="downloadDialog" />
     <upload-dialog ref="uploadDialog" @upload="upload" />
+    <merge-dialog ref="mergeDialog" @over="mergeOver" />
   </div>
 </template>
 
@@ -55,8 +56,15 @@ import EditDialog from "@/components/EditDialog";
 import EditFunctionView from "@/components/EditFunctionView";
 import DownloadDialog from "@/components/DownloadDialog";
 import UploadDialog from "@/components/UploadDialog";
+import MergeDialog from "@/components/MergeDialog";
 export default {
-  components: { EditFunctionView, EditDialog, DownloadDialog, UploadDialog },
+  components: {
+    EditFunctionView,
+    EditDialog,
+    DownloadDialog,
+    UploadDialog,
+    MergeDialog
+  },
   computed: {
     showList() {
       let keyWords = this.keyWords;
@@ -85,10 +93,19 @@ export default {
       functionInfoList != "undefined" &&
       functionInfoList != "null"
     ) {
-      this.functionInfoList = JSON.parse(functionInfoList);
+      try {
+        this.functionInfoList = JSON.parse(functionInfoList);
+      } catch (e) {
+        console.error(e, functionInfoList);
+        localStorage.setItem("functionList", "[]");
+      }
     }
   },
   methods: {
+    mergeOver() {
+      this.functionInfoList = JSON.parse(localStorage.getItem("functionList"));
+      this.$message.success("导入成功");
+    },
     showUpload() {
       this.$refs.uploadDialog.show();
     },
@@ -98,11 +115,39 @@ export default {
         if (!(list instanceof Array)) {
           this.$$message.error("导入格式错误");
         }
-        this.functionInfoList = list;
+
+        let mergeList = [];
+        let nameMap = {};
+        let nameList = this.functionInfoList.map(item => {
+          nameMap[item.name] = item;
+          return item.name;
+        });
+
+        list.forEach(element => {
+          let { name } = element;
+          if (name != null) {
+            if (nameList.includes(name)) {
+              let element2 = nameMap[name];
+              if (JSON.stringify(element2) != JSON.stringify(element)) {
+                mergeList.push(element);
+              }
+            } else {
+              nameMap[name] = element;
+              nameList.push(name);
+              this.functionInfoList.push(element);
+            }
+          }
+        });
         this.saveData();
-        this.$message.success("导入成功");
         close();
+
+        if (mergeList.length > 0) {
+          this.$refs.mergeDialog.show(mergeList);
+        } else {
+          this.$message.success("导入成功");
+        }
       } catch (e) {
+        console.error(e);
         this.$message.error("导入格式错误");
       }
     },
@@ -141,7 +186,6 @@ export default {
         .catch(() => {});
     },
     editSubmit(data, index) {
-      console.log("data", data);
       for (let key in data) {
         this.$set(this.functionInfoList[index], key, data[key]);
       }

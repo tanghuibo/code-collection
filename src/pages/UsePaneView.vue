@@ -41,14 +41,18 @@ export default {
   }),
   mounted() {
     let functionInfoList = localStorage.getItem("functionList");
-    console.log(functionInfoList);
     if (
       functionInfoList != null &&
       functionInfoList != "" &&
       functionInfoList != "undefined" &&
       functionInfoList != "null"
     ) {
-      this.functionInfoList = JSON.parse(functionInfoList);
+      try {
+        this.functionInfoList = JSON.parse(functionInfoList);
+      } catch (e) {
+        console.error(e, functionInfoList);
+        localStorage.setItem("functionList", "[]");
+      }
     }
   }
 };
