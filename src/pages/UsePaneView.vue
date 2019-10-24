@@ -19,6 +19,8 @@
 
 <script>
 import StringFromatView from "@/components/StringFromatView";
+import service from "@/js/service.js";
+let { getData, saveData } = service;
 export default {
   components: { StringFromatView },
   computed: {
@@ -40,20 +42,7 @@ export default {
     keyWords: ""
   }),
   mounted() {
-    let functionInfoList = localStorage.getItem("functionList");
-    if (
-      functionInfoList != null &&
-      functionInfoList != "" &&
-      functionInfoList != "undefined" &&
-      functionInfoList != "null"
-    ) {
-      try {
-        this.functionInfoList = JSON.parse(functionInfoList);
-      } catch (e) {
-        console.error(e, functionInfoList);
-        localStorage.setItem("functionList", "[]");
-      }
-    }
+    this.functionInfoList = getData();
   }
 };
 </script>

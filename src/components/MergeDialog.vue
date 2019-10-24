@@ -18,6 +18,8 @@
 
 <script>
 import copy from "copy-to-clipboard";
+import service from "@/js/service.js";
+let { getData, saveData } = service;
 export default {
   data() {
     return {
@@ -30,9 +32,7 @@ export default {
       this.mergeList = mergeList;
       this.visible = true;
     },
-    getData() {
-      return JSON.parse(localStorage.getItem("functionList"));
-    },
+    
     check() {
       if (this.mergeList.length == 0) {
         this.visible = false;
@@ -50,7 +50,7 @@ export default {
     },
     replace(data) {
       let { name } = data;
-      let functionInfoList = this.getData();
+      let functionInfoList = getData();
 
       for (let i = 0; i < functionInfoList.length; i++) {
         if (functionInfoList[i].name == name) {
@@ -59,7 +59,7 @@ export default {
         }
       }
 
-      localStorage.setItem("functionList", JSON.stringify(functionInfoList));
+      saveData(functionInfoList);
 
       this.mergeList = this.mergeList.filter(item => item.name != name);
       this.check();

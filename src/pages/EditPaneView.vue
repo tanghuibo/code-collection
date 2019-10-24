@@ -57,6 +57,8 @@ import EditFunctionView from "@/components/EditFunctionView";
 import DownloadDialog from "@/components/DownloadDialog";
 import UploadDialog from "@/components/UploadDialog";
 import MergeDialog from "@/components/MergeDialog";
+import service from "@/js/service.js";
+let { getData, saveData } = service;
 export default {
   components: {
     EditFunctionView,
@@ -86,24 +88,11 @@ export default {
     };
   },
   mounted() {
-    let functionInfoList = localStorage.getItem("functionList");
-    if (
-      functionInfoList != null &&
-      functionInfoList != "" &&
-      functionInfoList != "undefined" &&
-      functionInfoList != "null"
-    ) {
-      try {
-        this.functionInfoList = JSON.parse(functionInfoList);
-      } catch (e) {
-        console.error(e, functionInfoList);
-        localStorage.setItem("functionList", "[]");
-      }
-    }
+    this.functionInfoList = getData();
   },
   methods: {
     mergeOver() {
-      this.functionInfoList = JSON.parse(localStorage.getItem("functionList"));
+      this.functionInfoList = getData();
       this.$message.success("导入成功");
     },
     showUpload() {
@@ -164,10 +153,7 @@ export default {
       this.saveData();
     },
     saveData() {
-      localStorage.setItem(
-        "functionList",
-        JSON.stringify(this.functionInfoList)
-      );
+      saveData(this.functionInfoList);
     },
     deleteData(index, data) {
       this.$confirm(

@@ -13,7 +13,7 @@
         <el-input v-model="form.desc" type="textarea" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submit">立即创建</el-button>
+        <el-button type="primary" @click="submit">{{this.event== 'add' ? '立即创建': '保存'}}</el-button>
       </el-form-item>
     </el-form>
   </el-dialog>
@@ -65,7 +65,6 @@ export default {
             this.$emit("editSubmit", this.form, this.index);
           }
           this.showAddDiagLogFlag = false;
-        } else {
         }
       });
     },
