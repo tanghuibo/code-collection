@@ -2,14 +2,14 @@
   <div>
     <!-- form，水平居中 -->
     <div v-if="params != null && params.length > 0">
-      <el-form style="text-align: center;" ref="form" :model="form" label-width="20%" label-position="right">
+      <el-form ref="form" :model="form" label-width="12.5%" label-position="right">
         <!-- 输入框 -->
 
         <el-form-item v-for="param in params" :key="param.key" :label="param.label">
-          <el-input v-model="form[param.key]"></el-input>
+          <el-input style="width: 85%;" v-model="form[param.key]"></el-input>
         </el-form-item>
         <!-- 查询&重置按钮 -->
-        <el-form-item>
+        <el-form-item style="text-align: center;">
           <el-button type="primary" @click="onQuery">查询</el-button>
           <el-button @click="init">重置</el-button>
         </el-form-item>

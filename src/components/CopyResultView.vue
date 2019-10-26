@@ -10,9 +10,7 @@
           </el-col>
           <!-- 内容 -->
           <el-col :span="18">
-            <el-tooltip effect="dark" :content="item.text" placement="top">
-              <el-input :readonly="true" width="300" v-model="item.text"></el-input>
-            </el-tooltip>
+            <el-input type="textarea" autosize :readonly="true" width="300" v-model="item.text"></el-input>
           </el-col>
           <!-- 复制按钮 -->
           <el-col :span="3" style="text-align: left;">

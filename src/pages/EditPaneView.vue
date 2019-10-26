@@ -19,14 +19,6 @@
       >导出</el-button>
     </div>
     <el-table border stripe :data="showList">
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <EditFunctionView
-            @commit="functionInfo => editSubmit({...props.row, functionInfo}, props.$index)"
-            :value="props.row.functionInfo"
-          />
-        </template>
-      </el-table-column>
       <el-table-column label="方法名称" prop="name"></el-table-column>
       <el-table-column label="描述" prop="desc"></el-table-column>
       <el-table-column width="260" label="操作" prop="desc">
@@ -53,7 +45,6 @@
 
 <script>
 import EditDialog from "@/components/EditDialog";
-import EditFunctionView from "@/components/EditFunctionView";
 import DownloadDialog from "@/components/DownloadDialog";
 import UploadDialog from "@/components/UploadDialog";
 import MergeDialog from "@/components/MergeDialog";
@@ -61,7 +52,6 @@ import service from "@/js/service.js";
 let { getData, saveData } = service;
 export default {
   components: {
-    EditFunctionView,
     EditDialog,
     DownloadDialog,
     UploadDialog,

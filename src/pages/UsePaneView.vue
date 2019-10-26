@@ -6,23 +6,28 @@
       </el-input>
     </div>
     <el-table border stripe :data="showList">
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <StringFromatView :value="props.row.functionInfo" />
-        </template>
-      </el-table-column>
       <el-table-column label="方法名称" prop="name"></el-table-column>
       <el-table-column label="描述" prop="desc"></el-table-column>
+      <el-table-column width="260" label="操作" prop="desc">
+        <template slot-scope="scope">
+          <el-button
+            icon="el-icon-caret-righ"
+            type="success"
+            @click="() => run(scope.row)"
+          >运行</el-button>
+        </template>
+      </el-table-column>
     </el-table>
+    <StringFromatViewDialog ref="runDialog" />
   </div>
 </template>
 
 <script>
-import StringFromatView from "@/components/StringFromatView";
+import StringFromatViewDialog from "@/components/StringFromatViewDialog";
 import service from "@/js/service.js";
 let { getData, saveData } = service;
 export default {
-  components: { StringFromatView },
+  components: { StringFromatViewDialog },
   computed: {
     showList() {
       let keyWords = this.keyWords;
@@ -35,6 +40,11 @@ export default {
         item =>
           item.name.indexOf(keyWords) >= 0 || item.desc.indexOf(keyWords) >= 0
       );
+    }
+  },
+  methods: {
+    run(data) {
+      this.$refs.runDialog.show(data);
     }
   },
   data: () => ({
