@@ -2,13 +2,7 @@
   <div>
     <!-- form，水平居中 -->
     <div v-if="params != null && params.length > 0">
-      <el-form
-        style="text-align: center;"
-        :inline="true"
-        ref="form"
-        :model="form"
-        label-width="80px"
-      >
+      <el-form style="text-align: center;" ref="form" :model="form" label-width="20%" label-position="right">
         <!-- 输入框 -->
 
         <el-form-item v-for="param in params" :key="param.key" :label="param.label">
