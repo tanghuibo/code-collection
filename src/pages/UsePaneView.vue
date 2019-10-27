@@ -10,11 +10,7 @@
       <el-table-column label="描述" prop="desc"></el-table-column>
       <el-table-column width="260" label="操作" prop="desc">
         <template slot-scope="scope">
-          <el-button
-            icon="el-icon-caret-righ"
-            type="success"
-            @click="() => run(scope.row)"
-          >运行</el-button>
+          <el-button icon="el-icon-caret-righ" type="success" @click="() => run(scope.row)">运行</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -26,6 +22,8 @@
 import StringFromatViewDialog from "@/components/StringFromatViewDialog";
 import service from "@/js/service.js";
 let { getData, saveData } = service;
+import langUtil from "@/js/langUtil.js";
+let { likes } = langUtil;
 export default {
   components: { StringFromatViewDialog },
   computed: {
@@ -36,9 +34,8 @@ export default {
       }
       keyWords = keyWords.trim();
 
-      return this.functionInfoList.filter(
-        item =>
-          item.name.indexOf(keyWords) >= 0 || item.desc.indexOf(keyWords) >= 0
+      return this.functionInfoList.filter(item =>
+        likes([item.name, item.desc], keyWords)
       );
     }
   },

@@ -50,6 +50,8 @@ import UploadDialog from "@/components/UploadDialog";
 import MergeDialog from "@/components/MergeDialog";
 import service from "@/js/service.js";
 let { getData, saveData } = service;
+import langUtil from "@/js/langUtil.js";
+let { likes } = langUtil;
 export default {
   components: {
     EditDialog,
@@ -65,9 +67,8 @@ export default {
       }
       keyWords = keyWords.trim();
 
-      return this.functionInfoList.filter(
-        item =>
-          item.name.indexOf(keyWords) >= 0 || item.desc.indexOf(keyWords) >= 0
+      return this.functionInfoList.filter(item =>
+        likes([item.name, item.desc], keyWords)
       );
     }
   },
