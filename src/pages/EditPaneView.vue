@@ -1,10 +1,18 @@
 <template>
   <div>
     <div class="head">
-      <el-input style="width: 300px;" placeholder="请输入内容" v-model="keyWords">
-        <template slot="prepend">查询</template>
-      </el-input>
-      <el-button type="primary" style="margin-left: 20px;" @click="addData" icon="el-icon-plus">新增</el-button>
+      <el-input
+        style="width: 300px;"
+        placeholder="请输入内容"
+        prefix-icon="el-icon-search"
+        v-model="keyWords"
+      ></el-input>
+      <el-button
+        type="primary"
+        style="margin-left: 20px;"
+        @click="addData"
+        icon="el-icon-plus"
+      >新增</el-button>
       <el-button
         type="primary"
         style="margin-left: 20px;"
@@ -18,7 +26,7 @@
         icon="el-icon-download"
       >导出</el-button>
     </div>
-    <el-table border stripe :data="showList">
+    <el-table max-height="calc(100vh - 180px)" border stripe :data="showList">
       <el-table-column label="方法名称" prop="name"></el-table-column>
       <el-table-column label="描述" prop="desc"></el-table-column>
       <el-table-column width="260" label="操作" prop="desc">
@@ -27,18 +35,20 @@
             icon="el-icon-edit"
             type="success"
             @click="() => editData(scope.$index, scope.row)"
-          >修改</el-button>
+            circle
+          ></el-button>
           <el-button
             icon="el-icon-delete"
             type="danger"
+            circle
             @click="() => deleteData(scope.$index, scope.row)"
-          >删除</el-button>
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
     <edit-dialog ref="editDialog" @addSubmit="addSubmit" @editSubmit="editSubmit" />
     <download-dialog ref="downloadDialog" />
-    <upload-dialog ref="uploadDialog" @upload="upload" />
+    <upload-dialog ref="uploadDialog" @upload="upload" @allUpload="allUpload" />
     <merge-dialog ref="mergeDialog" @over="mergeOver" />
   </div>
 </template>
@@ -88,6 +98,21 @@ export default {
     },
     showUpload() {
       this.$refs.uploadDialog.show();
+    },
+    allUpload(code, close) {
+      try {
+        let list = JSON.parse(code);
+        if (!(list instanceof Array)) {
+          this.$$message.error("导入格式错误");
+        }
+        this.functionInfoList = list;
+        this.saveData();
+        close();
+        this.$message.success("导入成功");
+      } catch (e) {
+        console.error(e);
+        this.$message.error("导入格式错误");
+      }
     },
     upload(code, close) {
       try {

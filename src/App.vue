@@ -44,4 +44,7 @@ export default {
   height: calc(100vh - 100px);
   overflow: scroll;
 }
+.tab::-webkit-scrollbar {
+  display: none;
+}
 </style>

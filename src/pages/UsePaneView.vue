@@ -1,16 +1,19 @@
 <template>
   <div>
     <div class="head">
-      <el-input style="width: 300px;" placeholder="请输入内容" v-model="keyWords">
-        <template slot="prepend">查询</template>
-      </el-input>
+      <el-input
+        style="width: 300px;"
+        placeholder="请输入内容"
+        prefix-icon="el-icon-search"
+        v-model="keyWords"
+      ></el-input>
     </div>
-    <el-table border stripe :data="showList">
+    <el-table max-height="calc(100vh - 180px)" border stripe :data="showList">
       <el-table-column label="方法名称" prop="name"></el-table-column>
       <el-table-column label="描述" prop="desc"></el-table-column>
       <el-table-column width="260" label="操作" prop="desc">
         <template slot-scope="scope">
-          <el-button icon="el-icon-caret-righ" type="success" @click="() => run(scope.row)">运行</el-button>
+          <el-button icon="el-icon-caret-right" circle type="success" @click="() => run(scope.row)"></el-button>
         </template>
       </el-table-column>
     </el-table>

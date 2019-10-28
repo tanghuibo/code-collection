@@ -12,7 +12,14 @@
             line: true
           }"
     />
-    <el-button @click="upload" type="text">导入</el-button>
+    <el-dropdown @click="upload" style="margin-top: 10px; " size="mini" split-button>
+      导入
+      <el-dropdown-menu size="mini" divided slot="dropdown">
+        <el-dropdown-item size="mini">
+          <div @click="allUpload">全量导入</div>
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
   </el-dialog>
 </template>
 
@@ -32,6 +39,9 @@ export default {
     },
     upload() {
       this.$emit("upload", this.code, () => (this.visible = false));
+    },
+    allUpload() {
+      this.$emit("allUpload", this.code, () => (this.visible = false));
     }
   }
 };
