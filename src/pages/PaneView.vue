@@ -2,42 +2,63 @@
   <div>
     <div class="head">
       <el-input
-        style="width: 300px;"
-        placeholder="请输入内容"
+        class="head-search-input"
+        placeholder="请输入搜索内容"
         prefix-icon="el-icon-search"
         v-model="keyWords"
       ></el-input>
-      <el-button
-        type="primary"
-        style="margin-left: 20px;"
-        @click="addData"
-        icon="el-icon-plus"
-      >新增</el-button>
-      <el-button
-        type="primary"
-        style="margin-left: 20px;"
-        @click="showUpload"
-        icon="el-icon-upload2"
-      >导入</el-button>
-      <el-button
-        type="primary"
-        style="margin-left: 20px;"
-        @click="showDownload"
-        icon="el-icon-download"
-      >导出</el-button>
+      <span v-show="inEditMode">
+        <el-button type="primary" style="margin-left: 20px;" @click="addData" icon="el-icon-plus">新增</el-button>
+        <el-badge :value="selectList.length" :hidden="selectList.length == 0" class="item">
+          <el-button
+            :disabled="selectList.length == 0"
+            type="primary"
+            style="margin-left: 20px;"
+            @click="deleteList"
+            icon="el-icon-delete"
+          >删除</el-button>
+        </el-badge>
+        <el-button
+          type="primary"
+          style="margin-left: 20px;"
+          @click="showUpload"
+          icon="el-icon-upload2"
+        >导入</el-button>
+        <el-badge :value="selectList.length" :hidden="selectList.length == 0" class="item">
+          <el-button
+            type="primary"
+            style="margin-left: 20px;"
+            @click="showDownload"
+            icon="el-icon-download"
+          >导出</el-button>
+        </el-badge>
+      </span>
+
+      <el-switch v-model="inEditMode" class="head-mode-search" active-text="开启编辑"></el-switch>
     </div>
-    <el-table max-height="calc(100vh - 180px)" border stripe :data="showList">
+    <el-table
+      class="table"
+      max-height="85vh"
+      stripe
+      :data="showList"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column v-if="inEditMode" type="selection" width="55"></el-table-column>
+      <el-table-column type="index" width="50"></el-table-column>
       <el-table-column label="方法名称" prop="name"></el-table-column>
       <el-table-column label="描述" prop="desc"></el-table-column>
-      <el-table-column width="260" label="操作" prop="desc">
+      <el-table-column width="260" label>
         <template slot-scope="scope">
+          <el-button icon="el-icon-caret-right" circle type="primary" @click="() => run(scope.row)"></el-button>
           <el-button
+            v-if="inEditMode"
             icon="el-icon-edit"
             type="success"
             @click="() => editData(scope.$index, scope.row)"
             circle
           ></el-button>
           <el-button
+            v-if="inEditMode"
             icon="el-icon-delete"
             type="danger"
             circle
@@ -50,10 +71,12 @@
     <download-dialog ref="downloadDialog" />
     <upload-dialog ref="uploadDialog" @upload="upload" @allUpload="allUpload" />
     <merge-dialog ref="mergeDialog" @over="mergeOver" />
+    <StringFromatViewDialog ref="runDialog" />
   </div>
 </template>
 
 <script>
+import StringFromatViewDialog from "@/components/StringFromatViewDialog";
 import EditDialog from "@/components/EditDialog";
 import DownloadDialog from "@/components/DownloadDialog";
 import UploadDialog from "@/components/UploadDialog";
@@ -64,6 +87,7 @@ import langUtil from "@/js/langUtil.js";
 let { likes } = langUtil;
 export default {
   components: {
+    StringFromatViewDialog,
     EditDialog,
     DownloadDialog,
     UploadDialog,
@@ -85,7 +109,9 @@ export default {
   data: function() {
     return {
       functionInfoList: [],
-      keyWords: ""
+      keyWords: "",
+      inEditMode: false,
+      selectList: []
     };
   },
   mounted() {
@@ -157,9 +183,13 @@ export default {
       }
     },
     showDownload() {
-      this.$refs.downloadDialog.show(
-        JSON.stringify(this.functionInfoList, 0, 2)
-      );
+      if (this.selectList.length == 0) {
+        this.$refs.downloadDialog.show(
+          JSON.stringify(this.functionInfoList, 0, 2)
+        );
+      } else {
+        this.$refs.downloadDialog.show(JSON.stringify(this.selectList, 0, 2));
+      }
     },
     showMessageAndSaveData(message) {
       this.$message({
@@ -170,6 +200,21 @@ export default {
     },
     saveData() {
       saveData(this.functionInfoList);
+    },
+    deleteList() {
+      this.$confirm(`确认要删除${this.selectList.length}条数据吗`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.functionInfoList = this.functionInfoList.filter(
+            item => !this.selectList.includes(item)
+          );
+          this.saveData();
+          this.showMessageAndSaveData("删除成功");
+        })
+        .catch(() => {});
     },
     deleteData(index, data) {
       this.$confirm(
@@ -183,6 +228,7 @@ export default {
       )
         .then(() => {
           this.functionInfoList.splice(index, 1);
+          this.saveData();
           this.showMessageAndSaveData("删除成功");
         })
         .catch(() => {});
@@ -207,6 +253,12 @@ export default {
         data,
         index
       );
+    },
+    handleSelectionChange(selectList) {
+      this.selectList = selectList;
+    },
+    run(data) {
+      this.$refs.runDialog.show(data);
     }
   }
 };
@@ -214,6 +266,25 @@ export default {
 
 <style lang="css" scoped>
 .head {
-  margin-bottom: 10px;
+  height: 50px;
+  margin-bottom: 3px;
+  padding: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  border-radius: 5px;
+}
+.head-search-input {
+  width: 300px;
+  line-height: 50px;
+}
+.head-mode-search {
+  float: right;
+  height: 50px;
+}
+.table {
+  padding: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  border-radius: 5px;
 }
 </style>
