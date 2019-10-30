@@ -6,7 +6,12 @@
         <!-- 输入框 -->
 
         <el-form-item v-for="param in params" :key="param.key" :label="param.label">
-          <el-input style="width: 85%;" v-model="form[param.key]"></el-input>
+          <el-input
+            type="textarea"
+            :autosize="{ minRows: 1, maxRows: 4 }"
+            style="width: 85%;"
+            v-model="form[param.key]"
+          ></el-input>
         </el-form-item>
         <!-- 查询&重置按钮 -->
         <el-form-item style="text-align: center;">

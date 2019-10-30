@@ -1,69 +1,83 @@
 <template>
   <div>
-    <div class="head">
+    <div class="panel-head">
       <el-input
         class="head-search-input"
         placeholder="请输入搜索内容"
         prefix-icon="el-icon-search"
         v-model="keyWords"
       ></el-input>
-      <span v-show="inEditMode">
-        <el-button type="primary" style="margin-left: 20px;" @click="addData" icon="el-icon-plus">新增</el-button>
-        <el-badge :value="selectList.length" :hidden="selectList.length == 0" class="item">
-          <el-button
-            :disabled="selectList.length == 0"
-            type="primary"
-            style="margin-left: 20px;"
-            @click="deleteList"
-            icon="el-icon-delete"
-          >删除</el-button>
-        </el-badge>
-        <el-button
-          type="primary"
-          style="margin-left: 20px;"
-          @click="showUpload"
-          icon="el-icon-upload2"
-        >导入</el-button>
-        <el-badge :value="selectList.length" :hidden="selectList.length == 0" class="item">
+      <transition name="el-fade-in-linear">
+        <span v-show="inEditMode">
           <el-button
             type="primary"
             style="margin-left: 20px;"
-            @click="showDownload"
-            icon="el-icon-download"
-          >导出</el-button>
-        </el-badge>
-      </span>
-
-      <el-switch v-model="inEditMode" class="head-mode-search" active-text="开启编辑"></el-switch>
+            @click="addData"
+            icon="el-icon-plus"
+          >新增</el-button>
+          <el-badge :value="selectList.length" :hidden="selectList.length == 0" class="item">
+            <el-button
+              :disabled="selectList.length == 0"
+              type="primary"
+              style="margin-left: 20px;"
+              @click="deleteList"
+              icon="el-icon-delete"
+            >删除</el-button>
+          </el-badge>
+          <el-button
+            type="primary"
+            style="margin-left: 20px;"
+            @click="showUpload"
+            icon="el-icon-upload2"
+          >导入</el-button>
+          <el-badge :value="selectList.length" :hidden="selectList.length == 0" class="item">
+            <el-button
+              type="primary"
+              style="margin-left: 20px;"
+              @click="showDownload"
+              icon="el-icon-download"
+            >导出</el-button>
+          </el-badge>
+        </span>
+      </transition>
+      <el-switch v-model="inEditMode" class="head-mode-switch" active-text="开启编辑"></el-switch>
     </div>
     <el-table
-      class="table"
-      max-height="85vh"
+      :header-cell-class-name="getHeaderClassName"
+      class="panel-table"
       stripe
       :data="showList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column v-if="inEditMode" type="selection" width="55"></el-table-column>
+      <el-table-column type="selection" width="55">
+        <div v-if="!inEditMode">
+          <template></template>
+        </div>
+      </el-table-column>
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column label="方法名称" prop="name"></el-table-column>
       <el-table-column label="描述" prop="desc"></el-table-column>
       <el-table-column width="260" label>
         <template slot-scope="scope">
           <el-button icon="el-icon-caret-right" circle type="primary" @click="() => run(scope.row)"></el-button>
-          <el-button
-            v-if="inEditMode"
-            icon="el-icon-edit"
-            type="success"
-            @click="() => editData(scope.$index, scope.row)"
-            circle
-          ></el-button>
-          <el-button
-            v-if="inEditMode"
-            icon="el-icon-delete"
-            type="danger"
-            circle
-            @click="() => deleteData(scope.$index, scope.row)"
-          ></el-button>
+          <transition name="el-fade-in-linear">
+            <el-button
+              v-if="inEditMode"
+              icon="el-icon-edit"
+              type="success"
+              @click="() => editData(scope.$index, scope.row)"
+              circle
+            ></el-button>
+          </transition>
+          <transition name="el-fade-in-linear">
+            <el-button
+              v-if="inEditMode"
+              icon="el-icon-delete"
+              type="danger"
+              circle
+              @click="() => deleteData(scope.$index, scope.row)"
+            ></el-button>
+          </transition>
         </template>
       </el-table-column>
     </el-table>
@@ -118,6 +132,12 @@ export default {
     this.functionInfoList = getData();
   },
   methods: {
+    getHeaderClassName({ columnIndex }) {
+      if (columnIndex == 0) {
+        return this.inEditMode ? null : "hidden-heard-checkbox";
+      }
+      return null;
+    },
     mergeOver() {
       this.functionInfoList = getData();
       this.$message.success("导入成功");
@@ -265,7 +285,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.head {
+.panel-head {
   height: 50px;
   margin-bottom: 3px;
   padding: 10px;
@@ -274,17 +294,25 @@ export default {
   border-radius: 5px;
 }
 .head-search-input {
-  width: 300px;
+  width: 35vh;
   line-height: 50px;
 }
-.head-mode-search {
+.head-mode-switch {
   float: right;
   height: 50px;
 }
-.table {
+.panel-table {
   padding: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
   border-radius: 5px;
+  max-height: calc(100vh - 140px);
+  overflow-y: scroll;
+}
+</style>
+
+<style>
+.hidden-heard-checkbox > .cell > .el-checkbox {
+  visibility: hidden;
 }
 </style>
