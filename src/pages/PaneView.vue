@@ -96,9 +96,10 @@ import DownloadDialog from "@/components/DownloadDialog";
 import UploadDialog from "@/components/UploadDialog";
 import MergeDialog from "@/components/MergeDialog";
 import service from "@/js/service.js";
-let { getData, saveData } = service;
 import langUtil from "@/js/langUtil.js";
-let { likes } = langUtil;
+import uuid from "uuid";
+let { getData, saveData } = service;
+let { likes, someEquals } = langUtil;
 export default {
   components: {
     StringFromatViewDialog,
@@ -151,6 +152,7 @@ export default {
         if (!(list instanceof Array)) {
           this.$$message.error("导入格式错误");
         }
+        list = list.map(item => ({ ...item, id: uuid() }));
         this.functionInfoList = list;
         this.saveData();
         close();
@@ -167,6 +169,7 @@ export default {
           this.$$message.error("导入格式错误");
         }
 
+        list = list.map(item => ({ ...item, id: uuid() }));
         let mergeList = [];
         let nameMap = {};
         let nameList = this.functionInfoList.map(item => {
@@ -179,7 +182,7 @@ export default {
           if (name != null) {
             if (nameList.includes(name)) {
               let element2 = nameMap[name];
-              if (JSON.stringify(element2) != JSON.stringify(element)) {
+              if (!someEquals(element, element2, ["desc", "functionInfo"])) {
                 mergeList.push(element);
               }
             } else {
@@ -247,7 +250,10 @@ export default {
         }
       )
         .then(() => {
-          this.functionInfoList.splice(this.getFunctionInfoIndexById(data.id), 1);
+          this.functionInfoList.splice(
+            this.getFunctionInfoIndexById(data.id),
+            1
+          );
           this.saveData();
           this.showMessageAndSaveData("删除成功");
         })

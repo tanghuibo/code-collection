@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import copy from "copy-to-clipboard";
 export default {
   data() {
     return {

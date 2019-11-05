@@ -63,5 +63,27 @@ export default {
     fmStr = fmStr.replace("w", week);
 
     return fmStr;
+  },
+
+  /**
+   * 是否部分相等
+   * @param {*} o1
+   * @param {*} o2
+   * @param {*} keyList
+   */
+  someEquals(o1, o2, keyList) {
+    for (let key of keyList) {
+      if (typeof o1[key] != typeof o2[key]) {
+        return false;
+      }
+      if (typeof o1[key] == "object") {
+        if (JSON.stringify(o1[key]) != JSON.stringify(o2[key])) {
+          return false;
+        }
+      } else if (o1[key] != o2[key]) {
+        return false;
+      }
+    }
+    return true;
   }
 };
