@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import uuid from "uuid";
 import EditFunctionView from "./EditFunctionView";
 export default {
   components: {
@@ -50,7 +51,6 @@ export default {
         params: [{ key: "", label: "" }],
         printFunction: ""
       },
-      index: -1,
       event: "add",
       nameList: [],
       exceptionName: [],
@@ -86,7 +86,7 @@ export default {
           if (this.event == "add") {
             this.$emit("addSubmit", this.form);
           } else if (this.event == "edit") {
-            this.$emit("editSubmit", this.form, this.index);
+            this.$emit("editSubmit", this.form);
           }
           this.visible = false;
         }
@@ -97,7 +97,8 @@ export default {
 
       this.form = {
         name: "",
-        desc: ""
+        desc: "",
+        id: uuid()
       };
       this.functionInfo = {
         params: [{ key: "name", label: "名称" }],
@@ -107,16 +108,14 @@ export default {
       };
       this.nameList = nameList;
       this.exceptionName = [];
-      this.index = -1;
       this.visible = true;
     },
-    edit(nameList, data, index) {
+    edit(nameList, data) {
       this.event = "edit";
       this.form = { ...data };
       this.functionInfo = data.functionInfo;
       this.exceptionName = [data.name];
       this.nameList = nameList;
-      this.index = index;
       this.visible = true;
     }
   }

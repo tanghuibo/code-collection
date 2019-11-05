@@ -75,7 +75,7 @@
               icon="el-icon-delete"
               type="danger"
               circle
-              @click="() => deleteData(scope.$index, scope.row)"
+              @click="() => deleteData(scope.row)"
             ></el-button>
           </transition>
         </template>
@@ -236,7 +236,7 @@ export default {
         })
         .catch(() => {});
     },
-    deleteData(index, data) {
+    deleteData(data) {
       this.$confirm(
         `确认要删除方法"${data == null ? "" : data.name}"吗`,
         "提示",
@@ -247,13 +247,23 @@ export default {
         }
       )
         .then(() => {
-          this.functionInfoList.splice(index, 1);
+          this.functionInfoList.splice(this.getFunctionInfoIndexById(data.id), 1);
           this.saveData();
           this.showMessageAndSaveData("删除成功");
         })
         .catch(() => {});
     },
-    editSubmit(data, index) {
+    getFunctionInfoIndexById(id) {
+      for (let index in this.functionInfoList) {
+        if (this.functionInfoList[index].id === id) {
+          return index;
+        }
+      }
+      return null;
+    },
+    editSubmit(data) {
+      let { id } = data;
+      let index = this.getFunctionInfoIndexById(id);
       for (let key in data) {
         this.$set(this.functionInfoList[index], key, data[key]);
       }
@@ -270,8 +280,7 @@ export default {
     editData(index, data) {
       this.$refs.editDialog.edit(
         this.functionInfoList.map(item => item.name),
-        data,
-        index
+        data
       );
     },
     handleSelectionChange(selectList) {
