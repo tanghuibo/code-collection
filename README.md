@@ -10,6 +10,9 @@
 
 code colletion 是一个用于收藏和运行JavaScript脚本的工具，可以帮你快速创建和运行脚本，并将其导出分享给你的朋友或者同事。
 
+### 演示
+
+![demo.gif](./doc/demo.gif)
 
 ### 功能介绍
 
