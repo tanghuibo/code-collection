@@ -15,7 +15,7 @@
         </el-form-item>
         <!-- 查询&重置按钮 -->
         <el-form-item style="text-align: center;">
-          <el-button type="primary" @click="onQuery">查询</el-button>
+          <el-button type="primary" @click="onQuery">运行</el-button>
           <el-button @click="init">重置</el-button>
         </el-form-item>
       </el-form>

@@ -102,8 +102,8 @@ export default {
       };
       this.functionInfo = {
         params: [{ key: "name", label: "名称" }],
-        printFunction: `function($, pt) { 
-  pt("问候语", \`你好\${$.name}\`);
+        printFunction: `function({name}, print) { 
+  print("问候语", \`你好\${name}\`);
 }`
       };
       this.nameList = nameList;
