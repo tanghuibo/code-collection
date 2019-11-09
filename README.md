@@ -8,7 +8,7 @@
 
 <h2 align="center">Code Collection</h2>
 
-code colletion 是一个用于收藏和运行 JavaScript 脚本的工具，可以帮你快速创建和运行脚本，并将其导出分享给你的朋友或者同事。
+code colletion 是一个用于收藏和运行JavaScript脚本的工具，可以帮你快速创建和运行脚本，并将其导出分享给你的朋友或者同事。
 
 ### 优点
 
@@ -23,46 +23,16 @@ code colletion 是一个用于收藏和运行 JavaScript 脚本的工具，可�
 
 #### 编写脚本
 
-脚本分为两个部分，<font color="#67C23A">参数</font>部分和<font color="#67C23A">方法</font>部分
+脚本分为两个部分，[参数]()部分和[方法]()部分
 
-<font color="#67C23A">参数</font>为 JSON 数组格式，用于生成让用户填写的表单，每一项中有如下属性
+[参数]()为JSON数组格式，用于生成让用户填写的表单，每一项中有如下属性
 
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="middle">
-        参数
-      </td>
-      <td align="center" valign="middle">
-        名称
-      </td>
-    </tr>
-    <tr>
-      <td align="center" valign="middle">
-        label
-      </td>
-      <td align="center" valign="middle">
-        表单标签
-      </td>
-    </tr>
-    <tr>
-      <td align="center" valign="middle">
-        key
-      </td>
-      <td align="center" valign="middle">
-        <a style="color: #E6A23C">参数key</a>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" valign="middle">
-        default
-      </td>
-      <td align="center" valign="middle">
-        默认值
-      </td>
-    </tr>
-  </tbody>
-</table>
+
+| 参数    | 作用                                 |
+| ------- | ------------------------------------ |
+| label   | 表单标签                             |
+| key     | [参数key]() |
+| default | 默认值                               |
 
 例子:
 
@@ -83,7 +53,9 @@ code colletion 是一个用于收藏和运行 JavaScript 脚本的工具，可�
 
 ![运行-表单](./doc/运行-表单.png)
 
-<font color="#67C23A">方法</font>为 function 函数
+
+
+ [方法]()为function函数
 
 ```javas
 function(param, print) {
@@ -91,9 +63,9 @@ function(param, print) {
 }
 ```
 
-第一个参数为用户提交的表单，表单的每一项通过<font color="#E6A23C">参数 key</font>获取
+第一个参数为用户提交的表单，表单的每一项通过[参数key]()获取
 
-第二个参数为<font color="#67C23A">print 函数</font>,<font color="#67C23A">print 函数</font>第一个入参为打印值的标签，第二个参数为打印值。
+第二个参数为[print函数](),[print函数]()第一个入参为打印值的标签，第二个参数为打印值。
 
 运行
 
@@ -105,14 +77,15 @@ print("名称", "冯宝宝");
 
 ![运行-结果](./doc/运行-结果.png)
 
+
 #### 管理脚本
 
-除了基本的增删改查之外还指出<font color='#409eff'>导入</font>和<font color='#409eff'>导出</font>功能
+除了基本的增删改查之外还指出[导入]()和[导出]()功能
 
 为了让使用者不会用错脚本，建议:
 
-- 脚本名称不要<font color="#F56C6C">重复</font>
-- 描述中讲清楚脚本的<font color="#67C23A">用途</font>
+- 脚本名称不要[重复]()
+- 描述中讲清楚脚本的[用途]()
 
 #### 运行脚本
 
