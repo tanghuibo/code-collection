@@ -1,7 +1,6 @@
 <p align="center"><a href="http://tanghuibo.github.io/code-collection" target="_blank" rel="noopener noreferrer"><img width="100" src="./doc/favicon.ico"></a></p>
 
 <p align="center">
-  <a href="#"><img src="https://img.shields.io/circleci/project/github/vuejs/vue/dev.svg" alt="Build Status"></a>
   <a href="#"><img src="https://img.shields.io/npm/l/vue.svg" alt="License"></a>
   <br>
 </p>
