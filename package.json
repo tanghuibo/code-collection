@@ -5,12 +5,14 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "serve-test":"node ./src/serve/storage/sqlite.js"
   },
   "dependencies": {
     "copy-to-clipboard": "^3.2.0",
     "core-js": "^2.6.5",
     "element-ui": "^2.4.5",
+    "sqlite3": "^4.1.0",
     "uuid": "^3.3.3",
     "vue": "^2.6.10",
     "vue-codemirror": "^4.0.5"
