@@ -1,30 +1,25 @@
+var SqliteDB = require("../tools/easeSqlite").SqliteDB;
+let SqlRepo = require("./SqlRepo");
 
-var SqliteDB = require('../tools/easeSqlite').SqliteDB;
- 
- 
- 
 var file = "T.db";
- 
+
 var sqliteDB = new SqliteDB(file);
 
-var createTileTableSql = "create table if not exists js_tool(name TEXT, desc TEXT, function_info TEXT);";
+let sqlRepo = new SqlRepo({
+  tableName: "js_tool",
+  fileds: ["name", "desc", "function_info"]
+});
+
+var createTileTableSql = sqlRepo.getCreateSql();
 
 sqliteDB.createTable(createTileTableSql);
 
- 
-let insertTileSql = "insert into js_tool(name, desc, function_info) values(?, ?, ?)";
- 
+let insertTileSql = sqlRepo.getInsertSql();
+
 let list = [];
-for(let i = 0; i < 3; i ++) {
-    list.push(['gaga', 'xx', 'asdasd']);
+for (let i = 0; i < 3; i++) {
+  list.push(["gaga", null, "asdasd"]);
 }
 
 sqliteDB.insertData(insertTileSql, list);
 sqliteDB.queryData("select * from js_tool", console.log);
-
-
-
-
-
-
-
