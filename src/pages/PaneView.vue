@@ -81,10 +81,14 @@
         </template>
       </el-table-column>
     </el-table>
-    <edit-dialog ref="editDialog" @addSubmit="addSubmit" @editSubmit="editSubmit" />
+    <edit-dialog ref="editDialog" @afterSuccess="showMessageAndGetData" />
     <download-dialog ref="downloadDialog" />
-    <upload-dialog ref="uploadDialog" @upload="upload" @allUpload="allUpload" />
-    <merge-dialog ref="mergeDialog" @over="mergeOver" />
+    <upload-dialog
+      ref="uploadDialog"
+      @afterSuccess="showMessageAndGetData"
+      @handleMerge="handleMerge"
+    />
+    <merge-dialog ref="mergeDialog" @afterSuccess="showMessageAndGetData" />
     <StringFromatViewDialog ref="runDialog" />
   </div>
 </template>
@@ -97,8 +101,8 @@ import UploadDialog from "@/components/UploadDialog";
 import MergeDialog from "@/components/MergeDialog";
 import service from "@/js/service.js";
 import langUtil from "@/js/langUtil.js";
-import uuid from "uuid";
-let { getData, saveData } = service;
+import { async } from "q";
+let { getData, saveData, deleteByIds } = service;
 let { likes, someEquals } = langUtil;
 export default {
   components: {
@@ -112,25 +116,25 @@ export default {
     showList() {
       let keyWords = this.keyWords;
       if (keyWords == null || keyWords.trim() == "") {
-        return this.functionInfoList;
+        return this.codeList;
       }
       keyWords = keyWords.trim();
 
-      return this.functionInfoList.filter(item =>
+      return this.codeList.filter(item =>
         likes([item.name, item.desc], keyWords)
       );
     }
   },
   data: function() {
     return {
-      functionInfoList: [],
+      codeList: [],
       keyWords: "",
       inEditMode: false,
       selectList: []
     };
   },
   mounted() {
-    this.functionInfoList = getData();
+    getData().then(data => (this.codeList = data));
   },
   methods: {
     getHeaderClassName({ columnIndex }) {
@@ -139,90 +143,19 @@ export default {
       }
       return null;
     },
-    mergeOver() {
-      this.functionInfoList = getData();
-      this.$message.success("导入成功");
-    },
     showUpload() {
       this.$refs.uploadDialog.show();
     },
-    allUpload(code, close) {
-      try {
-        let list = JSON.parse(code);
-        if (!(list instanceof Array)) {
-          this.$$message.error("导入格式错误");
-        }
-        list = list.map(item => ({ ...item, id: uuid() }));
-        this.functionInfoList = list;
-        this.saveData();
-        close();
-        this.$message.success("导入成功");
-      } catch (e) {
-        console.error(e);
-        this.$message.error("导入格式错误");
-      }
-    },
-    upload(code, close) {
-      try {
-        let list = JSON.parse(code);
-        if (!(list instanceof Array)) {
-          this.$$message.error("导入格式错误");
-        }
-
-        list = list.map(item => ({ ...item, id: uuid() }));
-        let mergeList = [];
-        let nameMap = {};
-        let nameList = this.functionInfoList.map(item => {
-          nameMap[item.name] = item;
-          return item.name;
-        });
-
-        list.forEach(element => {
-          let { name } = element;
-          if (name != null) {
-            if (nameList.includes(name)) {
-              let element2 = nameMap[name];
-              if (!someEquals(element, element2, ["desc", "functionInfo"])) {
-                mergeList.push(element);
-              }
-            } else {
-              nameMap[name] = element;
-              nameList.push(name);
-              this.functionInfoList.push(element);
-            }
-          }
-        });
-        this.saveData();
-        close();
-
-        if (mergeList.length > 0) {
-          this.$refs.mergeDialog.show(mergeList);
-        } else {
-          this.$message.success("导入成功");
-        }
-      } catch (e) {
-        console.error(e);
-        this.$message.error("导入格式错误");
-      }
-    },
     showDownload() {
       if (this.selectList.length == 0) {
-        this.$refs.downloadDialog.show(
-          JSON.stringify(this.functionInfoList, 0, 2)
-        );
+        this.$refs.downloadDialog.show(JSON.stringify(this.codeList, 0, 2));
       } else {
         this.$refs.downloadDialog.show(JSON.stringify(this.selectList, 0, 2));
       }
     },
-    showMessageAndSaveData(message) {
-      this.$message({
-        type: "success",
-        message
-      });
-      this.saveData();
-    },
-    saveData() {
-      saveData(this.functionInfoList);
+    showMessageAndGetData(message) {
+      this.$message.success(message);
+      getData().then(data => (this.codeList = data));
     },
     deleteList() {
       this.$confirm(`确认要删除${this.selectList.length}条数据吗`, "提示", {
@@ -230,12 +163,9 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => {
-          this.functionInfoList = this.functionInfoList.filter(
-            item => !this.selectList.includes(item)
-          );
-          this.saveData();
-          this.showMessageAndSaveData("删除成功");
+        .then(async () => {
+          await deleteByIds(this.selectList.map(item => item.id));
+          this.showMessageAndGetData("删除成功");
         })
         .catch(() => {});
     },
@@ -249,48 +179,31 @@ export default {
           type: "warning"
         }
       )
-        .then(() => {
-          this.functionInfoList.splice(
-            this.getFunctionInfoIndexById(data.id),
-            1
-          );
-          this.saveData();
-          this.showMessageAndSaveData("删除成功");
+        .then(async () => {
+          await deleteByIds([data.id]);
+          this.showMessageAndGetData("删除成功");
         })
-        .catch(() => {});
-    },
-    getFunctionInfoIndexById(id) {
-      for (let index in this.functionInfoList) {
-        if (this.functionInfoList[index].id === id) {
-          return index;
-        }
-      }
-      return null;
-    },
-    editSubmit(data) {
-      let { id } = data;
-      let index = this.getFunctionInfoIndexById(id);
-      for (let key in data) {
-        this.$set(this.functionInfoList[index], key, data[key]);
-      }
-      this.showMessageAndSaveData("修改成功");
-    },
-    addSubmit(data) {
-      this.functionInfoList.push(data);
-      this.showMessageAndSaveData("新增成功");
+        .catch(e => {
+          if (typeof e === "string") {
+            this.$message.error(e);
+          } else {
+            console.error(e);
+            this.$message.error("删除失败");
+          }
+        });
     },
 
     addData() {
-      this.$refs.editDialog.add(this.functionInfoList.map(item => item.name));
+      this.$refs.editDialog.add();
     },
     editData(index, data) {
-      this.$refs.editDialog.edit(
-        this.functionInfoList.map(item => item.name),
-        data
-      );
+      this.$refs.editDialog.edit(data);
     },
     handleSelectionChange(selectList) {
       this.selectList = selectList;
+    },
+    handleMerge(list) {
+      this.$refs.mergeDialog.show(list);
     },
     run(data) {
       this.$refs.runDialog.show(data);

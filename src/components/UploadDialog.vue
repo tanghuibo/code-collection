@@ -12,7 +12,13 @@
             line: true
           }"
     />
-    <el-dropdown @click="upload" style="margin-top: 10px; " size="mini" split-button>
+    <el-dropdown
+      :loading="loading"
+      @click="upload"
+      style="margin-top: 10px; "
+      size="mini"
+      split-button
+    >
       导入
       <el-dropdown-menu size="mini" divided slot="dropdown">
         <el-dropdown-item size="mini">
@@ -24,9 +30,13 @@
 </template>
 
 <script>
+import serive from "../js/service";
+
+let { uploadAll, upload } = serive;
 export default {
   data() {
     return {
+      loading: false,
       code: "",
       visible: false
     };
@@ -36,11 +46,79 @@ export default {
       this.code = "";
       this.visible = true;
     },
-    upload() {
-      this.$emit("upload", this.code, () => (this.visible = false));
+    getUploadData() {
+      let list = null;
+      try {
+        list = JSON.parse(this.code);
+        if (!(list instanceof Array)) {
+          throw "格式必须为JSON数组";
+        }
+      } catch (e) {
+        console.log(e);
+        throw "格式必须为JSON数组";
+      }
+      let nameSet = new Set();
+      for (let data of list) {
+        let {
+          name,
+          functionInfo: { params, printFunction }
+        } = data;
+
+        if (name == null || name.trim() == "") {
+          throw "name不能为空";
+        }
+        nameSet.add(name);
+        if (params != null && !(params instanceof Array)) {
+          throw "params必须为数组";
+        }
+        if (printFunction == null || printFunction.trim() == "") {
+          throw "printFunction不能为空";
+        }
+      }
+      if (nameSet.size != list.length) {
+        throw "name存在重复";
+      }
+      return list;
     },
-    allUpload() {
-      this.$emit("allUpload", this.code, () => (this.visible = false));
+    async upload() {
+      try {
+        this.loading = false;
+        let uploadList = this.getUploadData();
+        let resultList = await upload(uploadList);
+        if (resultList.length == 0) {
+          this.$emit("afterSuccess", "导入成功");
+        } else {
+          this.$emit("handleMerge", resultList);
+        }
+        this.visible = false;
+      } catch (e) {
+        if (typeof e === "string") {
+          this.$message.error(e);
+        } else {
+          console.error(e);
+          this.$message.error("发生未知错误");
+        }
+      } finally {
+        this.loading = true;
+      }
+    },
+    async allUpload() {
+      try {
+        this.loading = false;
+        let uploadList = this.getUploadData();
+        await uploadAll(uploadList);
+        this.$emit("afterSuccess", "导入成功");
+        this.visible = false;
+      } catch (e) {
+        if (typeof e === "string") {
+          this.$message.error(e);
+        } else {
+          console.error(e);
+          this.$message.error("发生未知错误");
+        }
+      } finally {
+        this.loading = true;
+      }
     }
   }
 };

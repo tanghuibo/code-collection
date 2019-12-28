@@ -28,6 +28,7 @@
           style="width: 100%; margin-top: 10px;"
           type="primary"
           @click="submit"
+          :loading="loading"
         >{{this.event== 'add' ? '立即创建': '保存'}}</el-button>
       </el-form-item>
     </el-form>
@@ -35,8 +36,10 @@
 </template>
 
 <script>
-import uuid from "uuid";
+import service from "../js/service";
 import EditFunctionView from "./EditFunctionView";
+import { async } from "q";
+let { addOne, updateById } = service;
 export default {
   components: {
     EditFunctionView
@@ -44,61 +47,60 @@ export default {
   data: function() {
     return {
       form: {
+        id: null,
         name: "",
-        desc: ""
+        desc: "",
+        functionInfo: null
       },
       functionInfo: {
         params: [{ key: "", label: "" }],
         printFunction: ""
       },
       event: "add",
-      nameList: [],
-      exceptionName: [],
       visible: false,
+      loading: false,
       formRules: {
-        name: [
-          { required: true, message: "请输入名称", trigger: "change" },
-          {
-            validator: (rule, value, callback) => {
-              if (this.exceptionName.includes(value)) {
-                callback();
-              } else if (this.nameList.includes(value)) {
-                callback("名称已存在");
-              } else {
-                callback();
-              }
-            },
-            trigger: "change"
-          }
-        ]
+        name: [{ required: true, message: "请输入名称", trigger: "change" }]
       }
     };
   },
   methods: {
     submit() {
-      this.$refs.form.validate(valid => {
+      this.$refs.form.validate(async valid => {
         if (valid) {
-          let result = this.$refs.functionView.getData();
-          if (result == null || !result.success) {
-            return;
+          try {
+            this.loading = true;
+            let result = this.$refs.functionView.getData();
+            if (result == null || !result.success) {
+              return;
+            }
+            this.form.functionInfo = result.data;
+            if (this.event == "add") {
+              await addOne(this.form);
+              this.$emit("afterSuccess", "新增成功");
+            } else if (this.event == "edit") {
+              await updateById(this.form);
+              this.$emit("afterSuccess", "更新成功");
+            }
+            this.visible = false;
+          } catch (e) {
+            if (typeof e === "string") {
+              this.$message.error(e);
+            } else {
+              console.error(e);
+              this.$message.error("发生未知错误");
+            }
+          } finally {
+            this.loading = false;
           }
-          this.form.functionInfo = result.data;
-          if (this.event == "add") {
-            this.$emit("addSubmit", this.form);
-          } else if (this.event == "edit") {
-            this.$emit("editSubmit", this.form);
-          }
-          this.visible = false;
         }
       });
     },
-    add(nameList) {
+    add() {
       this.event = "add";
-
       this.form = {
         name: "",
-        desc: "",
-        id: uuid()
+        desc: ""
       };
       this.functionInfo = {
         params: [{ key: "name", label: "名称" }],
@@ -106,16 +108,12 @@ export default {
   print("问候语", \`你好\${name}\`);
 }`
       };
-      this.nameList = nameList;
-      this.exceptionName = [];
       this.visible = true;
     },
-    edit(nameList, data) {
+    edit(data) {
       this.event = "edit";
       this.form = { ...data };
       this.functionInfo = data.functionInfo;
-      this.exceptionName = [data.name];
-      this.nameList = nameList;
       this.visible = true;
     }
   }

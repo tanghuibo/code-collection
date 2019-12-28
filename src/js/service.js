@@ -1,36 +1,30 @@
-import uuid from "uuid";
-
-function setId(list) {
-  return list.map(data => ({
-    ...data,
-    id: data.id == null ? uuid() : data.id
-  }));
-}
+import axios from "../plugins/axiosPlugins";
 
 export default {
-  getData() {
-    let functionInfoList = localStorage.getItem("functionList");
-    if (
-      functionInfoList != null &&
-      functionInfoList != "" &&
-      functionInfoList != "undefined" &&
-      functionInfoList != "null"
-    ) {
-      try {
-        let result = JSON.parse(functionInfoList);
-        if (result == null || !(result instanceof Array)) {
-          return [];
-        }
-        return setId(result);
-      } catch (e) {
-        console.error(e, functionInfoList);
-        localStorage.setItem("functionList", "[]");
-        return [];
-      }
-    }
-    return [];
+  async getData() {
+    let result = await axios.get("codeCollection/getAll");
+    return result.data;
   },
-  saveData(data) {
-    localStorage.setItem("functionList", JSON.stringify(data));
+  saveData(list) {
+    return axios.post("codeCollection/importAll", list);
+  },
+  addOne(data) {
+    return axios.post("codeCollection/addOne", data);
+  },
+  updateById(data) {
+    return axios.post("codeCollection/updateById", data);
+  },
+  deleteByIds(ids) {
+    return axios.post("codeCollection/deleteByIds", ids);
+  },
+  async upload(list) {
+    let result = await axios.post("codeCollection/upload", list);
+    return result.data;
+  },
+  uploadAll(list) {
+    return axios.post("codeCollection/uploadAll", list);
+  },
+  uploadForced(list) {
+    return axios.post("codeCollection/uploadForced", list);
   }
 };
