@@ -54,7 +54,7 @@ export default {
           throw "格式必须为JSON数组";
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
         throw "格式必须为JSON数组";
       }
       let nameSet = new Set();
