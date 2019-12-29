@@ -7,14 +7,17 @@
 
 <h2 align="center">Code Collection</h2>
 
-code colletion 是一个用于收藏和运行JavaScript脚本的工具，可以帮你快速创建和运行脚本，并将其导出分享给你的朋友或者同事。
+code colletion 是一个用于收藏和运行 JavaScript 脚本的工具，可以帮你快速创建和运行脚本，并将其导出分享给你的朋友或者同事。
 
 ### 效果展示
-
 
 ![demo.gif](./doc/demo.gif)
 
 地址: http://tanghuibo.github.io/code-collection
+
+带数据版本: https://github.com/tanghuibo/code-collection-serve
+
+下载地址: https://github.com/tanghuibo/code-collection-server/raw/master/bin/code-collection.jar
 
 ### 功能介绍
 
@@ -26,14 +29,13 @@ code colletion 是一个用于收藏和运行JavaScript脚本的工具，可以�
 
 脚本分为两个部分，[参数](#编写脚本)部分和[方法](#编写脚本)部分
 
-[参数](#编写脚本)为JSON数组格式，用于生成让用户填写的表单，每一项中有如下属性
+[参数](#编写脚本)为 JSON 数组格式，用于生成让用户填写的表单，每一项中有如下属性
 
-
-| 参数    | 作用                                 |
-| ------- | ------------------------------------ |
-| label   | 表单标签                             |
-| key     | [参数key](#编写脚本) |
-| default | 默认值                               |
+| 参数    | 作用                  |
+| ------- | --------------------- |
+| label   | 表单标签              |
+| key     | [参数 key](#编写脚本) |
+| default | 默认值                |
 
 例子:
 
@@ -55,9 +57,7 @@ code colletion 是一个用于收藏和运行JavaScript脚本的工具，可以�
 
 ![运行-表单](./doc/运行-表单.png)
 
-
-
- [方法](#编写脚本)为function函数
+[方法](#编写脚本)为 function 函数
 
 ```javas
 function(param, print) {
@@ -65,9 +65,9 @@ function(param, print) {
 }
 ```
 
-第一个参数为用户提交的表单，表单的每一项通过[参数key](#编写脚本)获取
+第一个参数为用户提交的表单，表单的每一项通过[参数 key](#编写脚本)获取
 
-第二个参数为[print函数](#编写脚本),[print函数](#编写脚本)第一个入参为打印值的标签，第二个参数为打印值。
+第二个参数为[print 函数](#编写脚本),[print 函数](#编写脚本)第一个入参为打印值的标签，第二个参数为打印值。
 
 运行
 
@@ -78,7 +78,6 @@ print("名称", "冯宝宝");
 得
 
 ![运行-结果](./doc/运行-结果.png)
-
 
 #### 管理脚本
 
