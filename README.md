@@ -17,7 +17,7 @@ code colletion 是一个用于收藏和运行 JavaScript 脚本的工具，可�
 
 带数据版本: https://github.com/tanghuibo/code-collection-serve
 
-下载地址: https://github.com/tanghuibo/code-collection-server/raw/master/bin/code-collection.jar
+下载: [mybatis-sqlify-1.0.0.jar](https://raw.githubusercontent.com/tanghuibo/package/master/code-collection-server/code-collection-server-1.0.0.jar)
 
 ### 功能介绍
 
